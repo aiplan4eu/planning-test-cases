@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: aiplan4eu/upf
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Checkout UPF
+        uses: actions/checkout@v2
+        with:
+          repository: aiplan4eu/upf
+          path: upf
+
+      - name: Install UPF
+        run: python3 -m pip install upf/
+
+      - name: Checkout Pyperplan UPF
+        uses: actions/checkout@v2
+        with:
+          repository: aiplan4eu/pyperplan-upf
+          path: pyperplan-upf
+
+      - name: Install Pyperplan UPF
+        run: python3 -m pip install pyperplan-upf/
+
+      - name: Run tests
+        run: python3 runner.py
