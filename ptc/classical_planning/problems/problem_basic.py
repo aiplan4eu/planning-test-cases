@@ -4,6 +4,10 @@ from upf.shortcuts import *
 from ptc.problem import TestCaseProblem
 
 class Basic1(TestCaseProblem):
+
+    def __init__(self, expected_version):
+        TestCaseProblem.__init__(self, expected_version)
+
     def get_problem(self):
         x = Fluent('x')
         y = Fluent('y')
@@ -22,5 +26,5 @@ class Basic1(TestCaseProblem):
     def get_description(self):
         return 'Just a basic test'
 
-    def _version():
+    def version(self):
         return 1

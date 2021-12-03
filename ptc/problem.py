@@ -1,7 +1,7 @@
 
 class TestCaseProblem(object):
-    def __init__(self, version):
-        if version != self._version():
+    def __init__(self, expected_version):
+        if expected_version != self.version():
             raise ValueError("Wrong version")
         pass
 
@@ -11,5 +11,5 @@ class TestCaseProblem(object):
     def get_description(self):
         raise NotImplementedError
 
-    def _version():
+    def version(self):
         raise NotImplementedError

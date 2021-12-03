@@ -2,25 +2,15 @@ import upf
 from upf.shortcuts import *
 
 from unittest import TestCase, main
-from ptc.classical_planning.problems.problem_basic import Basic1, Basic2
+from ptc.classical_planning.problems.problem_basic import Basic1
 
 class Check1(TestCase):
     def setUp(self):
         TestCase.setUp(self)
-        self.problems = {Basic1(version=1): 10}
+        self.problem = Basic1(expected_version=1)
 
     def test_basic(self):
-        upf_problem = self.problems[0].get_problem()
-        a = upf_problem.action('a')
-
-        with OneshotPlanner(name='pyperplan') as planner:
-            plan = planner.solve(upf_problem)
-            with PlanValidator(problem_kind=upf_problem.kind()) as validator:
-                check = validator.validate(upf_problem, plan)
-                self.assertTrue(check)
-
-    def test_advanced(self):
-        upf_problem = self.problems[1].get_problem()
+        upf_problem = self.problem.get_problem()
         a = upf_problem.action('a')
 
         with OneshotPlanner(name='pyperplan') as planner:
