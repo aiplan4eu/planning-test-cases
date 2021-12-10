@@ -1,7 +1,7 @@
 import upf
 from upf.shortcuts import *
 
-from ptc.problem import TestCaseProblem
+from planning_tests.commons.problem import TestCaseProblem
 
 class Basic1(TestCaseProblem):
 
