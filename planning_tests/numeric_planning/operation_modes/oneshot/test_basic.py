@@ -2,7 +2,7 @@ import upf
 from upf.shortcuts import *
 
 from unittest import TestCase, main
-from planning_tests.classical_planning.problems.problem_basic import UPFBasic
+from planning_tests.numeric_planning.problems.problem_basic import UPFBasic
 
 class TestBasic(TestCase):
     def setUp(self):

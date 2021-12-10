@@ -9,19 +9,19 @@ class UPFBasic(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        x = Fluent('x')
-        y = Fluent('y')
+        x = Fluent('x', IntType())
+        y = Fluent('y', IntType())
         a = InstantaneousAction('a')
-        a.add_precondition(y)
-        a.add_effect(x, True)
-        a.add_effect(y, False)
-        problem = Problem('basic')
+        a.add_precondition(GE(y, 10))
+        a.add_effect(x, Plus(x, 10))
+        a.add_effect(y, Minus(y, 10))
+        problem = Problem('basic_numeric')
         problem.add_fluent(x)
         problem.add_fluent(y)
         problem.add_action(a)
-        problem.set_initial_value(x, False)
-        problem.set_initial_value(y, True)
-        problem.add_goal(x)
+        problem.set_initial_value(x, 0)
+        problem.set_initial_value(y, 10)
+        problem.add_goal(GE(x, 10))
         return problem
 
     def get_description(self):
