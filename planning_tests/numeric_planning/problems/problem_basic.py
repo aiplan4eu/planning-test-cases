@@ -1,5 +1,5 @@
-import upf
-from upf.shortcuts import *
+import unified_planning
+from unified_planning.shortcuts import *
 
 from planning_tests.commons.problem import TestCaseProblem
 
