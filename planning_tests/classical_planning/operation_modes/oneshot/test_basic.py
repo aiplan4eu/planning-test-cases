@@ -2,12 +2,12 @@ import unified_planning
 from unified_planning.shortcuts import *
 
 from unittest import TestCase, main
-from planning_tests.classical_planning.problems.problem_basic import UPFBasic
+from planning_tests.classical_planning.problems.problem_basic import UPBasic
 
 class TestBasic(TestCase):
     def setUp(self):
         TestCase.setUp(self)
-        self.problem = UPFBasic(expected_version=1)
+        self.problem = UPBasic(expected_version=1)
 
     def test_basic(self):
         up_problem = self.problem.get_problem()

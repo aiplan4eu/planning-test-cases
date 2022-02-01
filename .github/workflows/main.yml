@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: aiplan4eu/upf
+    container: aiplan4eu/unified-planning
 
     steps:
       - name: Checkout
@@ -20,23 +20,23 @@ jobs:
       - name: Install Python dependencies
         run: python3 -m pip install -r requirements.txt
 
-      - name: Checkout UPF
+      - name: Checkout the Unified Planning Framework
         uses: actions/checkout@v2
         with:
-          repository: aiplan4eu/upf
-          path: upf
+          repository: aiplan4eu/unified-planning
+          path: unified-planning
 
-      - name: Install UPF
-        run: python3 -m pip install upf/
+      - name: Install Unified-Planning
+        run: python3 -m pip install unified-planning/
 
-      - name: Checkout Pyperplan UPF
+      - name: Checkout Pyperplan Unified-Planning interface
         uses: actions/checkout@v2
         with:
-          repository: aiplan4eu/pyperplan-upf
-          path: pyperplan-upf
+          repository: aiplan4eu/up-pyperplan
+          path: up-pyperplan
 
-      - name: Install Pyperplan UPF
-        run: python3 -m pip install pyperplan-upf/
+      - name: Install Pyperplan Unified-Planning interface
+        run: python3 -m pip install up-pyperplan/
 
       - name: Run tests
         run: python3 runner.py

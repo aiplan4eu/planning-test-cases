@@ -3,7 +3,7 @@ from unified_planning.shortcuts import *
 
 from planning_tests.commons.problem import TestCaseProblem
 
-class UPFBasic(TestCaseProblem):
+class UPBasic(TestCaseProblem):
 
     def __init__(self, expected_version):
         TestCaseProblem.__init__(self, expected_version)
