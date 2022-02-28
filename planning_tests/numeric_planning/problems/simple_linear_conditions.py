@@ -120,7 +120,6 @@ class UPEqualityConditions(TestCaseProblem):
     def get_problem(self):
         x = Fluent('x', IntType())
         a = InstantaneousAction('action1')
-        a.add_precondition(Equals(x, 10))
         a.add_effect(x, Minus(x, 10))
         problem = Problem('equality_linear_conditions')
         problem.add_fluent(x)
