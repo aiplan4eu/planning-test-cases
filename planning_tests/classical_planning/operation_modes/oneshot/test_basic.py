@@ -14,12 +14,14 @@ class TestBasic(TestCase):
 
         planner_names = [n for n, s in get_env().factory.solvers.items() if s.is_oneshot_planner()]
 
+        print()
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:
                 if planner.supports(up_problem.kind()):
-                    plan = planner.solve(up_problem)
+                    print("Testing", p)
+                    result = planner.solve(up_problem)
                     with PlanValidator(problem_kind=up_problem.kind()) as validator:
-                        check = validator.validate(up_problem, plan)
+                        check = validator.validate(up_problem, result.plan)
                         self.assertTrue(check)
 
 
