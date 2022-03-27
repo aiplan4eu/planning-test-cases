@@ -1,5 +1,6 @@
 import unified_planning
 from unified_planning.shortcuts import *
+from unified_planning.solvers.results import SOLVED_OPTIMALLY
 
 from unittest import TestCase, main
 from planning_tests.classical_planning.problems.problem_basic import UPBasic
@@ -23,6 +24,8 @@ class TestBasic(TestCase):
                     with PlanValidator(problem_kind=up_problem.kind()) as validator:
                         check = validator.validate(up_problem, result.plan)
                         self.assertTrue(check)
+                    if result.status is SOLVED_OPTIMALLY:
+                        assert self.problem.optimal_cost() == len(result.plan.actions())
 
 
 if __name__ == "__main__":

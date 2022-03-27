@@ -29,3 +29,6 @@ class UPBasic(TestCaseProblem):
 
     def version(self):
         return 1
+
+    def optimal_cost(self):
+        return 1
