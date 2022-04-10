@@ -18,17 +18,17 @@ class TestBasic(TestCase):
         print()
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:
-                if planner.supports(up_problem.kind()):
+                if planner.supports(up_problem.kind):
                     print("Testing", p)
                     result = planner.solve(up_problem)
-                    with PlanValidator(problem_kind=up_problem.kind()) as validator:
+                    with PlanValidator(problem_kind=up_problem.kind) as validator:
                         check = validator.validate(up_problem, result.plan)
                         self.assertTrue(check)
                     if planner.satisfies(unified_planning.solvers.solver.SOLVED_OPTIMALLY):
                         if result.plan:
                             assert result.status is SOLVED_OPTIMALLY
                     if result.status is SOLVED_OPTIMALLY:
-                        assert self.problem.optimal_cost() == len(result.plan.actions())
+                        assert self.problem.optimal_cost() == len(result.plan.actions)
 
 
 if __name__ == "__main__":
