@@ -18,10 +18,10 @@ class TestNonLinearEffects(TestCase):
         results = {}
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:
-                if planner.supports(problem.kind()):
+                if planner.supports(problem.kind):
                     plan = planner.solve(problem)
                     with PlanValidator(name='sequential_plan_validator') as validator:
-                        check = validator.validate(problem, plan)
+                        check = validator.validate(problem, plan.plan)
                         results[p] = check
                         assert check
 

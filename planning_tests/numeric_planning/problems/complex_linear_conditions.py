@@ -17,7 +17,7 @@ class UPDisjunctiveConditions(TestCaseProblem):
         problem = Problem('disjunctive_linear_conditions')
         problem.add_objects([x, y])
 
-        fun = Fluent('fun', IntType(), [obj])
+        fun = Fluent('fun', IntType(), o=obj)
         problem.add_fluent(fun, default_initial_value=0)
 
         action = InstantaneousAction('action1')
@@ -49,7 +49,7 @@ class UPExistentialConditions(TestCaseProblem):
         problem = Problem('existential_linear_conditions')
         problem.add_objects([x, y])
 
-        fun = Fluent('fun', IntType(), [obj])
+        fun = Fluent('fun', IntType(), o=obj)
         problem.add_fluent(fun, default_initial_value=0)
 
         action = InstantaneousAction('action1', param=obj)
@@ -85,7 +85,7 @@ class UPUniversalConditions(TestCaseProblem):
         problem = Problem('universal_linear_conditions')
         problem.add_objects([x, y])
 
-        fun = Fluent('fun', IntType(), [obj])
+        fun = Fluent('fun', IntType(), o=obj)
         problem.add_fluent(fun, default_initial_value=0)
         var = unified_planning.model.Variable('a', obj)
 
@@ -126,7 +126,7 @@ class UPComplexUniversalExistentialConditions(TestCaseProblem):
         problem = Problem('universal_existential_linear_conditions')
         problem.add_objects([x, y, z, k])
 
-        fun = Fluent('fun', RealType(), [type1, type2])
+        fun = Fluent('fun', RealType(), t1=type1, t2=type2)
         problem.add_fluent(fun, default_initial_value=0)
 
         action = InstantaneousAction('action1', param1=type1, param2=type2)

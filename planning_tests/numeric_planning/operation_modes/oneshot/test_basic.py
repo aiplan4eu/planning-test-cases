@@ -16,10 +16,10 @@ class TestBasic(TestCase):
 
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:
-                if planner.supports(up_problem.kind()):
+                if planner.supports(up_problem.kind):
                     plan = planner.solve(up_problem)
-                    with PlanValidator(problem_kind=up_problem.kind()) as validator:
-                        check = validator.validate(up_problem, plan)
+                    with PlanValidator(problem_kind=up_problem.kind) as validator:
+                        check = validator.validate(up_problem, plan.plan)
                         self.assertTrue(check)
 
 

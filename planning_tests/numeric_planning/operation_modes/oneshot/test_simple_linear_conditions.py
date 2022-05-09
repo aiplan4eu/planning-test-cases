@@ -21,10 +21,10 @@ class TestSimpleLinearConditions(TestCase):
         results = {}
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:
-                if planner.supports(problem.kind()):
+                if planner.supports(problem.kind):
                     plan = planner.solve(problem)
-                    with PlanValidator(problem_kind=problem.kind()) as validator:
-                        check = validator.validate(problem, plan)
+                    with PlanValidator(problem_kind=problem.kind) as validator:
+                        check = validator.validate(problem, plan.plan)
                         results[p] = check
                         assert check
 

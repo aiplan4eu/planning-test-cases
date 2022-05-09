@@ -17,7 +17,7 @@ class UPNonLinearDisjunctiveConditions(TestCaseProblem):
         problem = Problem('disjunctive_nonlinear_conditions')
         problem.add_objects([x, y])
 
-        fun = Fluent('fun', RealType(), [obj])
+        fun = Fluent('fun', RealType(), o=obj)
         problem.add_fluent(fun)
 
         action = InstantaneousAction('action1')
@@ -50,7 +50,7 @@ class UPNonLinearExistentialConditions(TestCaseProblem):
         problem = Problem('existential_nonlinear_conditions')
         problem.add_objects([x, y])
 
-        fun = Fluent('fun', IntType(), [obj])
+        fun = Fluent('fun', IntType(), o=obj)
         problem.add_fluent(fun)
 
         action = InstantaneousAction('action1')
@@ -88,7 +88,7 @@ class UPNonLinearUniversalConditions(TestCaseProblem):
         problem = Problem('universal_nonlinear_conditions')
         problem.add_objects([x, y])
 
-        fun = Fluent('fun', IntType(), [obj])
+        fun = Fluent('fun', IntType(), o=obj)
         problem.add_fluent(fun)
 
         action = InstantaneousAction('action1')
