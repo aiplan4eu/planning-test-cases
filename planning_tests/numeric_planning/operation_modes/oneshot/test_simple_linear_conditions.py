@@ -1,6 +1,6 @@
 import unified_planning
 from unified_planning.shortcuts import *
-from planning_tests.numeric_planning.problems.simple_linear_conditions import UPEqualityConditions, UPGreaterLowerConditions, UPNegativeConditions, UPGreaterThanConditions, UPLowerThanConditions
+from planning_tests.numeric_planning.up_problems.simple_linear_conditions import UPEqualityConditions, UPGreaterLowerConditions, UPNegativeConditions, UPGreaterThanConditions, UPLowerThanConditions
 from unified_planning.environment import get_env
 from unittest import TestCase, main
 

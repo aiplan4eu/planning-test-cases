@@ -1,5 +1,5 @@
 from unified_planning.shortcuts import *
-from planning_tests.numeric_planning.problems.constant_additive_effects import UPConstantIncreaseEffects, UPConstantDecreaseEffects, extend_problem
+from planning_tests.numeric_planning.up_problems.constant_additive_effects import UPConstantIncreaseEffects, UPConstantDecreaseEffects, extend_problem
 from unittest import TestCase, main
 
 

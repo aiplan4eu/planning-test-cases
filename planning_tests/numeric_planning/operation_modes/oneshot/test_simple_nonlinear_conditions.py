@@ -1,6 +1,6 @@
 import unified_planning
 from unified_planning.shortcuts import *
-from planning_tests.numeric_planning.problems.simple_nonlinear_conditions import UPGreaterThanEqualityNonLinearConditions, UPLowerEqualNegativeNonLinearConditions
+from planning_tests.numeric_planning.up_problems.simple_nonlinear_conditions import UPGreaterThanEqualityNonLinearConditions, UPLowerEqualNegativeNonLinearConditions
 from unittest import TestCase, main
 
 

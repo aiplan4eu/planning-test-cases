@@ -2,7 +2,7 @@ import unified_planning
 from unified_planning.shortcuts import *
 
 from unittest import TestCase, main
-from planning_tests.numeric_planning.problems.problem_basic import UPBasic
+from planning_tests.numeric_planning.up_problems.problem_basic import UPBasic
 
 class TestBasic(TestCase):
     def setUp(self):

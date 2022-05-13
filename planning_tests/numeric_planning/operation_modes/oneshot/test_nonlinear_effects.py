@@ -1,6 +1,6 @@
 import unified_planning
 from unified_planning.shortcuts import *
-from planning_tests.numeric_planning.problems.nonlinear_effects import UPNonLinearIncreaseEffects, UPNonLinearAssignEffects, UPNonLinearConditionalEffects
+from planning_tests.numeric_planning.up_problems.nonlinear_effects import UPNonLinearIncreaseEffects, UPNonLinearAssignEffects, UPNonLinearConditionalEffects
 from unittest import TestCase, main
 
 

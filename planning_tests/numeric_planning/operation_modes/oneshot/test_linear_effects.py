@@ -1,6 +1,6 @@
 import unified_planning
 from unified_planning.shortcuts import *
-from planning_tests.numeric_planning.problems.linear_effects import UPConditionalEffects
+from planning_tests.numeric_planning.up_problems.linear_effects import UPConditionalEffects
 from unified_planning.environment import get_env
 from unittest import TestCase, main
 

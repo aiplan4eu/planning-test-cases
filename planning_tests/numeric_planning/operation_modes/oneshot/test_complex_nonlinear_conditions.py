@@ -1,6 +1,6 @@
 import unified_planning
 from unified_planning.shortcuts import *
-from planning_tests.numeric_planning.problems.complex_nonlinear_conditions import UPNonLinearDisjunctiveConditions, UPNonLinearExistentialConditions, UPNonLinearUniversalConditions
+from planning_tests.numeric_planning.up_problems.complex_nonlinear_conditions import UPNonLinearDisjunctiveConditions, UPNonLinearExistentialConditions, UPNonLinearUniversalConditions
 from unified_planning.environment import get_env
 from unittest import TestCase, main
 
