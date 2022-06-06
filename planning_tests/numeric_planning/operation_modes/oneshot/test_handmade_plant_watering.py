@@ -5,7 +5,6 @@ from unified_planning.environment import get_env
 from unittest import TestCase, main
 
 
-
 class TestHandmadePlantWatering(TestCase):
 
     def setUp(self):
@@ -27,7 +26,8 @@ class TestHandmadePlantWatering(TestCase):
                         check = validator.validate(problem, plan.plan)
                         results[p] = check
                         assert check
-
+        print(f'Problem kind: {" " }')
+        print(problem.kind)
         print(f'Planners executed: {" ".join(results.keys())}')
 
     def test_problem_4_1(self):

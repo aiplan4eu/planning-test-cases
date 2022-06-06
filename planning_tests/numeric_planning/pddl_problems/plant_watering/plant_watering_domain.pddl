@@ -12,9 +12,7 @@
 (define (domain mt-plant-watering)
     (:types thing location - object
         agent plant tap - thing)
-   ; (:predicates
-    ;    (CONNECTED ?x ?y - location) ;; Whether two locations are connected.
-    ;)
+
 
     (:functions
         (maxx) ;; bounds
