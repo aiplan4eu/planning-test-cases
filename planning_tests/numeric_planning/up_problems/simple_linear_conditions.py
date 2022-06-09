@@ -8,6 +8,7 @@ class UPGreaterThanConditions(TestCaseProblem):
 
     def __init__(self, expected_version):
         TestCaseProblem.__init__(self, expected_version)
+      
 
     def get_problem(self):
         x = Fluent('x', RealType())
