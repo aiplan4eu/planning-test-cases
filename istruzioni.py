@@ -7,7 +7,7 @@ from unified_planning.io.pddl_reader import PDDLReader
 path = 'planning-test-cases/planning_tests/numeric_planning/pddl_problems/'
 reader = PDDLReader()
 # Qui metti il path per domino e problema
-pddl_problem = reader.parse_problem((path + 'block_grouping/block_grouping_domain.pddl'),(path + 'block_grouping/block_grouping_20_25_6_3.pddl'))
+pddl_problem = reader.parse_problem((path + 'sailing/sailing_domain.pddl'),(path + 'sailing/sailing_4_10_1229.pddl'))
 
 
 

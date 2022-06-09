@@ -6,7 +6,7 @@ from unittest import TestCase, main
 
 
 
-class TestPddlPlantWatering(TestCase):
+class TestPlantWatering(TestCase):
 
     def setUp(self):
         self.problem_4_1 = plant_watering_4_1(expected_version=1)

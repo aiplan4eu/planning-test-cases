@@ -17,3 +17,13 @@ def correct(path):
     for line in outdata:
         fout.write(line)
     fout.close()
+
+def correct_validation(data):
+    
+    
+    data = data.replace("\n","\\n")
+    data = data.replace(",","\n")
+    
+   
+    
+    return data
