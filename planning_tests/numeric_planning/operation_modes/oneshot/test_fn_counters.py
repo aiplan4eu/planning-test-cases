@@ -3,40 +3,26 @@ from unified_planning.shortcuts import *
 from planning_tests.numeric_planning.pddl_problems.fn_counters.fn_counters import fn_counters_2, fn_counters_4, fn_counters_8
 from unified_planning.environment import get_env
 import pytest
+from planning_tests.utility.util import TestUtil
+from planning_tests.utility.planner_names import get_planner_names
 
 
+class TestFNCounters:
 
-class TestHandmadeFNCounters:
-
-    fn_counters_2 = fn_counters_2(expected_version=1)
-    fn_counters_4 = fn_counters_4(expected_version=1)
-    fn_counters_8 = fn_counters_8(expected_version=1)
+	fn_counters_2 = fn_counters_2(expected_version=1)
+	fn_counters_4 = fn_counters_4(expected_version=1)
+	fn_counters_8 = fn_counters_8(expected_version=1)
    
 
-    @staticmethod
-    def execute_one_shot_planning_test(problem,planner_name):
+   	#we check only the first problem, since the domain is the same for all the problems
+	planner_names = get_planner_names(fn_counters_2.get_problem().kind)
 
-        results = {}
-       
-        with OneshotPlanner(name=planner_name) as planner:
-                if planner.supports(problem.kind):
-                    plan = planner.solve(problem)
-                    with PlanValidator(problem_kind=problem.kind) as validator:
-                        check = validator.validate(problem, plan.plan)
-                        results[planner_name] = check
-                        assert check
-
-        print(f'Planners executed: {" ".join(results.keys())}')
-
-    @pytest.mark.parametrize("planner_name",[n for n, s in get_env().factory.solvers.items() if s.is_oneshot_planner()])
-    def test_fn_counters_2(self,planner_name):
-        self.execute_one_shot_planning_test(self.fn_counters_2.get_problem(),planner_name)
-
-    @pytest.mark.parametrize("planner_name",[n for n, s in get_env().factory.solvers.items() if s.is_oneshot_planner()])
-    def test_fn_counters_4(self,planner_name):
-        self.execute_one_shot_planning_test(self.fn_counters_4.get_problem(),planner_name)
-
-    @pytest.mark.parametrize("planner_name",[n for n, s in get_env().factory.solvers.items() if s.is_oneshot_planner()])
-    def test_fn_counters_8(self,planner_name):
-        self.execute_one_shot_planning_test(self.fn_counters_8.get_problem(),planner_name)
+ 
+	
+	@pytest.mark.parametrize("planner_name",planner_names)
+	@pytest.mark.parametrize("problem_name,problem",[("fn_counters_2",fn_counters_2 ),
+	("fn_counters_4",fn_counters_4),
+	("fn_counters_8",fn_counters_8)])
+	def test_fn_counters(self,planner_name,problem_name,problem):
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
 

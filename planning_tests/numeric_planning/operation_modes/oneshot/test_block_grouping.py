@@ -2,12 +2,12 @@ import unified_planning
 from unified_planning.shortcuts import *
 from planning_tests.numeric_planning.pddl_problems.block_grouping.block_grouping import block_grouping_5_5_2_1, block_grouping_5_5_2_2, block_grouping_5_5_2_3, block_grouping_20_25_6_3, block_grouping_20_25_6_2, block_grouping_11_10_2_2
 from unified_planning.environment import get_env
-from planning_tests.correct_output import correct
+from planning_tests.utility.correct_output import correct
 import os
 import pytest
 import sys
-from planning_tests.util import TestUtil
-from planning_tests.planner_names import get_planner_names
+from planning_tests.utility.util import TestUtil
+from planning_tests.utility.planner_names import get_planner_names
 
 class TestBlockGrouping:
 

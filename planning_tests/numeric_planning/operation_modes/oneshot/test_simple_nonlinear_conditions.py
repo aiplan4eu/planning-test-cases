@@ -1,37 +1,27 @@
 import unified_planning
 from unified_planning.shortcuts import *
 from planning_tests.numeric_planning.up_problems.simple_nonlinear_conditions import UPGreaterThanEqualityNonLinearConditions, UPLowerEqualNegativeNonLinearConditions
-from unittest import TestCase, main
+from planning_tests.utility.util import TestUtil
+from planning_tests.utility.planner_names import get_planner_names
+import pytest
 
 
-class TestSimpleNonLinearConditions(TestCase):
+class TestSimpleNonLinearConditions:
 
-    def setUp(self):
-        self.problem_gt_equality_nonlinear_conditions = UPGreaterThanEqualityNonLinearConditions(expected_version=1)
-        self.problem_le_negative_nonlinear_conditions = UPLowerEqualNegativeNonLinearConditions(expected_version=1)
-
-    @staticmethod
-    def execute_one_shot_planning_test(problem):
-        planner_names = ['enhsp']
-
-        results = {}
-        for p in planner_names:
-            with OneshotPlanner(name=p) as planner:
-                if planner.supports(problem.kind):
-                    plan = planner.solve(problem)
-                    with PlanValidator(name='sequential_plan_validator') as validator:
-                        check = validator.validate(problem, plan.plan)
-                        results[p] = check
-                        assert check
-
-        print(f'Planners executed: {" ".join(results.keys())}')
-
-    def test_gt_equality_nonlinear_conditions(self):
-        self.execute_one_shot_planning_test(self.problem_gt_equality_nonlinear_conditions.get_problem())
-
-    def test_le_negative_nonlinear_conditions(self):
-        self.execute_one_shot_planning_test(self.problem_le_negative_nonlinear_conditions.get_problem())
+	
+	problem_gt_equality_nonlinear_conditions = UPGreaterThanEqualityNonLinearConditions(expected_version=1)
+	problem_le_negative_nonlinear_conditions = UPLowerEqualNegativeNonLinearConditions(expected_version=1)
 
 
-if __name__ == '__main__':
-    main()
+	planner_names = get_planner_names(problem_gt_equality_nonlinear_conditions.get_problem().kind)
+
+	#lpg doesnt support non linear numeric conditions, but there isnt a difference in problem.kind right now
+	@pytest.mark.parametrize("planner_name",planner_names)
+	@pytest.mark.parametrize("problem_name,problem",[("test_gt_equality_nonlinear_conditions",problem_gt_equality_nonlinear_conditions),
+	("test_le_negative_nonlinear_conditions",problem_le_negative_nonlinear_conditions)])
+	def test_simple_nonlinear_conditions(self,planner_name,problem_name,problem):
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),["none"],planner_name)
+
+
+
+
