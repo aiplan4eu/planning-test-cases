@@ -20,20 +20,24 @@ class TestSailing:
 	planner_names = get_planner_names(sailing_1_1_1229.get_problem().kind)
 
  
-	
+	@pytest.mark.all
+	@pytest.mark.sailing
+	@pytest.mark.simple	
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("sailing_1_1_1229",sailing_1_1_1229),
 	("sailing_1_2_1229",sailing_1_2_1229),
 	("sailing_1_3_1229",sailing_1_3_1229),
 	("sailing_3_3_1229",sailing_3_3_1229)])
 	def test_sailing(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
+	@pytest.mark.all
+	@pytest.mark.sailing
+	@pytest.mark.medium
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("sailing_4_10_1229",sailing_4_10_1229)])
-	@pytest.mark.skipif((len(sys.argv)<2 or sys.argv[1] == '-s' or sys.argv[1] == '-simple'),reason ="currently running in simple mode")
 	def test_sailing_medium(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
 	
 

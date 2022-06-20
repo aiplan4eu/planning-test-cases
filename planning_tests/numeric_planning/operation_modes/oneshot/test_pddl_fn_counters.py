@@ -18,13 +18,15 @@ class TestPddlFNCounters:
 	planner_names = get_planner_names(fn_counters_2.get_problem().kind)
 
  
-	
+	@pytest.mark.all
+	@pytest.mark.fn_counters
+	@pytest.mark.simple	
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("fn_counters_2",fn_counters_2 ),
 	("fn_counters_4",fn_counters_4),
 	("fn_counters_8",fn_counters_8)])
 	def test_fn_counters(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
 
 	

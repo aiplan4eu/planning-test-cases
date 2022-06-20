@@ -17,13 +17,15 @@ class TestNonLinearEffects:
 	planner_names = get_planner_names(problem_nonlinear_increase_effects.get_problem().kind)
 
  
-	
+	@pytest.mark.all
+	@pytest.mark.nonlinear_effects
+	@pytest.mark.simple	
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("test_increase_effects",problem_nonlinear_increase_effects ),
 	("test_assign_continuous_effects",problem_nonlinear_assign_continuous_effects),
 	("test_assign_conditional_effects",problem_nonlinear_assign_conditional_effects)])
 	def test_nonlinear_effects(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),["none"],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name)
 
 
 

@@ -21,7 +21,9 @@ class TestSimpleLinearConditions:
 
 
 
-
+	@pytest.mark.all
+	@pytest.mark.simple_linear_conditions
+	@pytest.mark.simple	
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("test_equality",problem_equality ),
 	("test_negative_conditions",problem_negative_conditions ),
@@ -29,6 +31,6 @@ class TestSimpleLinearConditions:
 	("test_lower_than_conditions",problem_lower_than_conditions),
 	("test_greater_lower_conditions", problem_greater_lower_conditions)])
 	def test_simple_linear_conditions(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),["none"],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name)
 
 	

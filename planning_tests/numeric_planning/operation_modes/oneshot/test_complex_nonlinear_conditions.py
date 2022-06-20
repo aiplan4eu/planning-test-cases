@@ -15,13 +15,15 @@ class TestComplexNonLinearConditions:
 	#we check only the first problem, since the domain is the same for all the problems
 	planner_names = get_planner_names(problem_nonlinear_disjunctive_conditions.get_problem().kind)
 
-
+	@pytest.mark.all
+	@pytest.mark.complex_nonlinear_conditions
+	@pytest.mark.simple
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("test_nonlinear_disjunctive_conditions",problem_nonlinear_disjunctive_conditions),
 	("test_nonlinear_existential_conditions",problem_nonlinear_existential_conditions ),
 	("test_nonlinear_universal_conditions",problem_nonlinear_universal_conditions)])
 	def test_nonlinear_complex_conditions(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),["none"],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name)
 
 
 

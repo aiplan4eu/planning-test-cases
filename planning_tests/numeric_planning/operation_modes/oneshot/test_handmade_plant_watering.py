@@ -17,13 +17,15 @@ class TestHandmadePlantWatering:
 	planner_names = get_planner_names(plant_watering_4_1.get_problem().kind)
 
  
-	
+	@pytest.mark.all
+	@pytest.mark.plant_watering
+	@pytest.mark.simple
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("plant_watering_4_1",plant_watering_4_1),
 	("plant_watering_4_2",plant_watering_4_2),
 	("plant_watering_4_3",plant_watering_4_3)])
 	def test_plant_watering(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
  
 
 

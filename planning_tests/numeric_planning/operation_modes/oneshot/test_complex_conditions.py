@@ -18,14 +18,16 @@ class TestComplexLinearConditions:
  	#we check only the first problem, since the domain is the same for all the problems
 	planner_names = get_planner_names(problem_disjunctive_conditions.get_problem().kind)
 
-
+	@pytest.mark.all
+	@pytest.mark.complex_conditions
+	@pytest.mark.simple
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("test_disjunctive_conditions",problem_disjunctive_conditions),
 	("test_existential_conditions",problem_existential_conditions ),
 	("test_universal_conditions",problem_universal_conditions),
 	("test_universal_existential_conditions",problem_universal_existential_conditions)])
 	def test_complex_conditions(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),["none"],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name)
 
 
 

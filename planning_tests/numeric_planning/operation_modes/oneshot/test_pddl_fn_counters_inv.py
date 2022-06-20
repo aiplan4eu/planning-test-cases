@@ -18,12 +18,13 @@ class TestPddlFNCountersInv:
 	planner_names = get_planner_names(fn_counters_inv_16.get_problem().kind)
 
  
-	
+	@pytest.mark.all
+	@pytest.mark.fn_counters
+	@pytest.mark.medium
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("fn_counters_inv_16",fn_counters_inv_16 )])
-	@pytest.mark.skipif((len(sys.argv)<2 or sys.argv[1] == '-s' or sys.argv[1] == '-simple'), reason ="currently running in simple mode")
 	def test_fn_counters_inv_medium(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
 	
 

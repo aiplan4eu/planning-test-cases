@@ -21,13 +21,15 @@ class TestHandmadeFarmland:
 	@pytest.mark.parametrize("problem_name,problem",[("farmland_2_100",farmland_2_100_1229 ),
 	("farmland_2_200_1229",farmland_2_200_1229 )])
 	def test_farmland(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
-
+	@pytest.mark.all
+	@pytest.mark.farmland
+	@pytest.mark.simple
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.xfail(reason="incorrect formulation of the problem")
 	def test_farmland_2_300_1229(self,planner_name):
-		TestUtil.execute_one_shot_planning_test(self.farmland_2_300_1229.get_problem(),['farmland_2_300_1229.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(self.farmland_2_300_1229.get_problem(),planner_name,['farmland_2_300_1229.pddl'])
 
 
 

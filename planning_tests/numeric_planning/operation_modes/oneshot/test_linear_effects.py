@@ -14,10 +14,13 @@ class TestLinearEffects:
 	#we check only the first problem, since the domain is the same for all the problems
 	planner_names = get_planner_names(problem_conditional_effects.get_problem().kind)
 
+	@pytest.mark.all
+	@pytest.mark.linear_effects
+	@pytest.mark.simple
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("test_conditional_effect",problem_conditional_effects)])
 	def test_conditonal_effect(self,planner_name,problem,problem_name):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),["none"],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name)
 
 
 

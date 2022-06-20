@@ -1,10 +1,9 @@
 import unified_planning
 from unified_planning.shortcuts import *
-from unified_planning.io.pddl_writer import PDDLWriter
 from unified_planning.io.pddl_reader import PDDLReader
 import pkg_resources
 from planning_tests.commons.problem import TestCaseProblem
-#path = '/home/valerik/Desktop/programmazione/planning/planning-test-cases/planning_tests/numeric_planning/pddl_problems/block_grouping/'
+
 path = pkg_resources.resource_filename(__name__,'/')
 class block_grouping_5_5_2_1(TestCaseProblem):
 

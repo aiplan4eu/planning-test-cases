@@ -17,12 +17,15 @@ class TestHandmadeBlockGrouping:
 	#we check only the first problem, since the domain is the same for all the problems
 	planner_names = get_planner_names(block_grouping_5_5_2_1.get_problem().kind)
 
+	@pytest.mark.all
+	@pytest.mark.block_grouping
+	@pytest.mark.simple
 	@pytest.mark.parametrize("planner_name",planner_names)
 	@pytest.mark.parametrize("problem_name,problem",[("block_grouping_5_5_2_1",block_grouping_5_5_2_1 ),
 	("block_grouping_5_5_2_2",block_grouping_5_5_2_2 ),
 	("block_grouping_5_5_2_3", block_grouping_5_5_2_3)])
 	def test_block_grouping(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),[problem_name +'.pddl'],planner_name)
+		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
 
 
