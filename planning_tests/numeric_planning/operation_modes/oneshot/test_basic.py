@@ -2,7 +2,7 @@ import unified_planning
 from unified_planning.shortcuts import *
 
 from unittest import TestCase, main
-from planning_tests.numeric_planning.problems.problem_basic import UPBasic
+from planning_tests.numeric_planning.up_problems.problem_basic import UPBasic
 
 class TestBasic(TestCase):
     def setUp(self):
@@ -16,10 +16,10 @@ class TestBasic(TestCase):
 
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:
-                if planner.supports(up_problem.kind()):
+                if planner.supports(up_problem.kind):
                     plan = planner.solve(up_problem)
-                    with PlanValidator(problem_kind=up_problem.kind()) as validator:
-                        check = validator.validate(up_problem, plan)
+                    with PlanValidator(problem_kind=up_problem.kind) as validator:
+                        check = validator.validate(up_problem, plan.plan)
                         self.assertTrue(check)
 
 
