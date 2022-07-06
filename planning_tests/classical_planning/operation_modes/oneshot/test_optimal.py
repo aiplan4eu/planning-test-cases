@@ -1,6 +1,6 @@
 import unified_planning as up
 from unified_planning.shortcuts import *
-from unified_planning.solvers import OptimalityGuarantee, PlanGenerationResultStatus
+from unified_planning.engines import OptimalityGuarantee, PlanGenerationResultStatus
 
 from unittest import TestCase, main
 from planning_tests.classical_planning.problems.problem_basic import UPBasic
@@ -33,7 +33,7 @@ class TestOptimal(TestCase):
         problem = self.solvable_problem
         up_problem = problem.get_problem()
         optimal = OptimalityGuarantee.SOLVED_OPTIMALLY
-        planner_names = [n for n, s in get_env().factory.solvers.items()
+        planner_names = [n for n, s in get_env().factory.engines.items()
                         if s.is_oneshot_planner() and
                         s.satisfies(optimal)]
 
@@ -48,7 +48,7 @@ class TestOptimal(TestCase):
         problem = self.unsolvable_problem
         up_problem = problem.get_problem()
         optimal = OptimalityGuarantee.SOLVED_OPTIMALLY
-        planner_names = [n for n, s in get_env().factory.solvers.items()
+        planner_names = [n for n, s in get_env().factory.engines.items()
                         if s.is_oneshot_planner() and
                         s.satisfies(optimal)]
         up_problem = self.unsolvable_problem.get_problem()
