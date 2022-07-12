@@ -1,11 +1,11 @@
 (define (problem depotprob7512) (:domain Depot)
 (:objects
-	depot0 - Depot
-	distributor0 distributor1 - Distributor
-	truck0 truck1 - Truck
-	pallet0 pallet1 pallet2 - Pallet
-	crate0 crate1 crate2 crate3 - Crate
-	hoist0 hoist1 hoist2 - Hoist)
+	depot0 - depot
+	distributor0 distributor1 - distributor
+	truck0 truck1 - truck
+	pallet0 pallet1 pallet2 - pallet
+	crate0 crate1 crate2 crate3 - crate
+	hoist0 hoist1 hoist2 - hoist)
 (:init
 	(at pallet0 depot0)
 	(clear crate0)
@@ -48,4 +48,5 @@
 	)
 )
 
-(:metric minimize (fuel-cost)))
+;(:metric minimize (fuel-cost))
+)
