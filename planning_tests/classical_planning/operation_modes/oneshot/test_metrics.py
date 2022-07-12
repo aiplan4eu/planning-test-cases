@@ -1,12 +1,8 @@
-import unified_planning
-from unified_planning.shortcuts import *
-from unified_planning.engines import OptimalityGuarantee, PlanGenerationResultStatus
-
 from unittest import TestCase, main
-from planning_tests.classical_planning.problems.problem_metric import UPCostMetricWithConstantCosts
-from planning_tests.classical_planning.problems.problem_metric import UPLengthMetric
 
 from planning_tests.classical_planning.operation_modes.oneshot.util import run_all_oneshot_planners_on_solvable_problem
+from planning_tests.classical_planning.problems.problem_metric import UPCostMetricWithConstantCosts
+from planning_tests.classical_planning.problems.problem_metric import UPLengthMetric
 
 class TestPlanCost(TestCase):
     def setUp(self):

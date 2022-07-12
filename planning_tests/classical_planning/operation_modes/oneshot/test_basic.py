@@ -1,10 +1,6 @@
-import unified_planning
-from unified_planning.shortcuts import *
-from unified_planning.engines import OptimalityGuarantee, PlanGenerationResultStatus
-
 from unittest import TestCase, main
-from planning_tests.classical_planning.problems.problem_basic import UPBasic
 
+from planning_tests.classical_planning.problems.problem_basic import UPBasic
 from planning_tests.classical_planning.operation_modes.oneshot.util import run_all_oneshot_planners_on_solvable_problem
 
 class TestBasic(TestCase):
