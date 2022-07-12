@@ -22,7 +22,7 @@ class UPBasicUnsolvable(TestCaseProblem):
         problem.set_initial_value(x, False)
         problem.set_initial_value(y, True)
         problem.add_goal(x)
-        problem.add_goal(Not(y))
+        problem.add_goal(y)
         return problem
 
     def get_description(self):
