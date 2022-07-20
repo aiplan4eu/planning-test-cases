@@ -69,6 +69,7 @@ def run_all_oneshot_planners_on_solvable_problem(up_problem, optimal_cost=None):
                             else:
                                 assert optimal_cost == len(result.plan.actions)
                 else:
+                    assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
                     # result status must reflect that there is no plan
                     assert result.status in (PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
                                              PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
@@ -88,6 +89,7 @@ def run_all_oneshot_planners_on_unsolvable_problem(up_problem):
             if planner.supports(up_problem.kind):
 
                 result = planner.solve(up_problem)
+                assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
                 # result status must reflect that there is no plan
                 assert result.status in (PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
                                          PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
