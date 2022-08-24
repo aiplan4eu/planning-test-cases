@@ -65,5 +65,5 @@
 	(>= (bought goods1) (request goods1))
 	(at truck0 depot0)))
 
-(:metric minimize (total-cost))
+;(:metric minimize (total-cost))
 )

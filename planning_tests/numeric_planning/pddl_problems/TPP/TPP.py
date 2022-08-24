@@ -1,0 +1,127 @@
+from fractions import Fraction
+from collections import OrderedDict
+import unified_planning as up
+from unified_planning.shortcuts import *
+from planning_tests.commons.problem import TestCaseProblem
+
+
+
+class TPP_p01(TestCaseProblem):
+
+    def __init__(self, expected_version):
+        TestCaseProblem.__init__(self, expected_version)
+
+    def get_problem(self):
+
+        env = up.environment.get_env()
+        emgr = env.expression_manager
+        tm = env.type_manager
+        type_locatable = tm.UserType("locatable")
+        type_truck = tm.UserType("truck", type_locatable)
+        type_place = tm.UserType("place")
+        type_goods = tm.UserType("goods", type_locatable)
+        type_market = tm.UserType("market", type_place)
+        type_depot = tm.UserType("depot", type_place)
+        fluent_at = up.model.Fluent("at", tm.BoolType(), _signature=OrderedDict([("t", type_truck), ("p", type_place)]))
+        fluent_on_sale = up.model.Fluent("on-sale", tm.RealType(None, None), _signature=OrderedDict([("g", type_goods), ("m", type_market)]))
+        fluent_drive_cost = up.model.Fluent("drive-cost", tm.RealType(None, None), _signature=OrderedDict([("p1", type_place), ("p2", type_place)]))
+        fluent_price = up.model.Fluent("price", tm.RealType(None, None), _signature=OrderedDict([("g", type_goods), ("m", type_market)]))
+        fluent_bought = up.model.Fluent("bought", tm.RealType(None, None), _signature=OrderedDict([("g", type_goods)]))
+        fluent_request = up.model.Fluent("request", tm.RealType(None, None), _signature=OrderedDict([("g", type_goods)]))
+        fluent_total_cost = up.model.Fluent("total-cost", tm.RealType(None, None), _signature=OrderedDict([]))
+        object_market1 = up.model.Object("market1", type_market)
+        object_market2 = up.model.Object("market2", type_market)
+        object_market3 = up.model.Object("market3", type_market)
+        object_market4 = up.model.Object("market4", type_market)
+        object_market5 = up.model.Object("market5", type_market)
+        object_depot0 = up.model.Object("depot0", type_depot)
+        object_truck0 = up.model.Object("truck0", type_truck)
+        object_goods0 = up.model.Object("goods0", type_goods)
+        problem_initial_defaults = {}
+        problem_initial_defaults[tm.BoolType()] = emgr.FALSE()
+        problem = up.model.Problem("pfile01", env, initial_defaults=problem_initial_defaults)
+        problem.add_object(object_market1)
+        problem.add_object(object_market2)
+        problem.add_object(object_market3)
+        problem.add_object(object_market4)
+        problem.add_object(object_market5)
+        problem.add_object(object_depot0)
+        problem.add_object(object_truck0)
+        problem.add_object(object_goods0)
+        problem.add_fluent(fluent_at, default_initial_value=emgr.FALSE())
+        problem.add_fluent(fluent_on_sale)
+        problem.add_fluent(fluent_drive_cost)
+        problem.add_fluent(fluent_price)
+        problem.add_fluent(fluent_bought)
+        problem.add_fluent(fluent_request)
+        problem.add_fluent(fluent_total_cost)
+        act_drive = up.model.InstantaneousAction("drive", _parameters=OrderedDict([("t", type_truck), ("from", type_place), ("to", type_place)]))
+        act_drive.add_precondition(fluent_at(emgr.ParameterExp(up.model.Parameter("t", type_truck)), emgr.ParameterExp(up.model.Parameter("from", type_place))))
+        act_drive.add_effect(fluent=fluent_at(emgr.ParameterExp(up.model.Parameter("t", type_truck)), emgr.ParameterExp(up.model.Parameter("from", type_place))), value=emgr.FALSE(), condition=emgr.TRUE())
+        act_drive.add_effect(fluent=fluent_at(emgr.ParameterExp(up.model.Parameter("t", type_truck)), emgr.ParameterExp(up.model.Parameter("to", type_place))), value=emgr.TRUE(), condition=emgr.TRUE())
+        act_drive.add_increase_effect(fluent=emgr.FluentExp(fluent_total_cost), value=fluent_drive_cost(emgr.ParameterExp(up.model.Parameter("from", type_place)), emgr.ParameterExp(up.model.Parameter("to", type_place))), condition=emgr.TRUE())
+        problem.add_action(act_drive)
+        act_buy_allneeded = up.model.InstantaneousAction("buy-allneeded", _parameters=OrderedDict([("t", type_truck), ("g", type_goods), ("m", type_market)]))
+        act_buy_allneeded.add_precondition(emgr.And(fluent_at(emgr.ParameterExp(up.model.Parameter("t", type_truck)), emgr.ParameterExp(up.model.Parameter("m", type_market))), emgr.LT(emgr.Int(0), fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market)))), emgr.LT(emgr.Minus(fluent_request(emgr.ParameterExp(up.model.Parameter("g", type_goods))), fluent_bought(emgr.ParameterExp(up.model.Parameter("g", type_goods)))), fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market))))))
+        act_buy_allneeded.add_decrease_effect(fluent=fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market))), value=emgr.Minus(fluent_request(emgr.ParameterExp(up.model.Parameter("g", type_goods))), fluent_bought(emgr.ParameterExp(up.model.Parameter("g", type_goods)))), condition=emgr.TRUE())
+        act_buy_allneeded.add_increase_effect(fluent=emgr.FluentExp(fluent_total_cost), value=emgr.Times(emgr.Minus(fluent_request(emgr.ParameterExp(up.model.Parameter("g", type_goods))), fluent_bought(emgr.ParameterExp(up.model.Parameter("g", type_goods)))), fluent_price(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market)))), condition=emgr.TRUE())
+        act_buy_allneeded.add_effect(fluent=fluent_bought(emgr.ParameterExp(up.model.Parameter("g", type_goods))), value=fluent_request(emgr.ParameterExp(up.model.Parameter("g", type_goods))), condition=emgr.TRUE())
+        problem.add_action(act_buy_allneeded)
+        act_buy_all = up.model.InstantaneousAction("buy-all", _parameters=OrderedDict([("t", type_truck), ("g", type_goods), ("m", type_market)]))
+        act_buy_all.add_precondition(emgr.And(fluent_at(emgr.ParameterExp(up.model.Parameter("t", type_truck)), emgr.ParameterExp(up.model.Parameter("m", type_market))), emgr.LT(emgr.Int(0), fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market)))), emgr.LE(fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market))), emgr.Minus(fluent_request(emgr.ParameterExp(up.model.Parameter("g", type_goods))), fluent_bought(emgr.ParameterExp(up.model.Parameter("g", type_goods)))))))
+        act_buy_all.add_effect(fluent=fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market))), value=emgr.Int(0), condition=emgr.TRUE())
+        act_buy_all.add_increase_effect(fluent=emgr.FluentExp(fluent_total_cost), value=emgr.Times(fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market))), fluent_price(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market)))), condition=emgr.TRUE())
+        act_buy_all.add_increase_effect(fluent=fluent_bought(emgr.ParameterExp(up.model.Parameter("g", type_goods))), value=fluent_on_sale(emgr.ParameterExp(up.model.Parameter("g", type_goods)), emgr.ParameterExp(up.model.Parameter("m", type_market))), condition=emgr.TRUE())
+        problem.add_action(act_buy_all)
+        problem.set_initial_value(fluent_price(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market1)), emgr.Int(17))
+        problem.set_initial_value(fluent_on_sale(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market1)), emgr.Int(4))
+        problem.set_initial_value(fluent_price(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market2)), emgr.Int(49))
+        problem.set_initial_value(fluent_on_sale(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market2)), emgr.Int(9))
+        problem.set_initial_value(fluent_price(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market3)), emgr.Int(33))
+        problem.set_initial_value(fluent_on_sale(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market3)), emgr.Int(17))
+        problem.set_initial_value(fluent_price(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market4)), emgr.Int(14))
+        problem.set_initial_value(fluent_on_sale(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market4)), emgr.Int(9))
+        problem.set_initial_value(fluent_price(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market5)), emgr.Int(40))
+        problem.set_initial_value(fluent_on_sale(emgr.ObjectExp(object_goods0), emgr.ObjectExp(object_market5)), emgr.Int(2))
+        problem.set_initial_value(fluent_at(emgr.ObjectExp(object_truck0), emgr.ObjectExp(object_depot0)), emgr.TRUE())
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_depot0), emgr.ObjectExp(object_market1)), emgr.Real(Fraction(1906, 5)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market1), emgr.ObjectExp(object_depot0)), emgr.Real(Fraction(1906, 5)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_depot0), emgr.ObjectExp(object_market2)), emgr.Real(Fraction(18438, 25)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market2), emgr.ObjectExp(object_depot0)), emgr.Real(Fraction(18438, 25)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_depot0), emgr.ObjectExp(object_market3)), emgr.Real(Fraction(9059, 20)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market3), emgr.ObjectExp(object_depot0)), emgr.Real(Fraction(9059, 20)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_depot0), emgr.ObjectExp(object_market4)), emgr.Real(Fraction(12911, 25)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market4), emgr.ObjectExp(object_depot0)), emgr.Real(Fraction(12911, 25)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_depot0), emgr.ObjectExp(object_market5)), emgr.Real(Fraction(55853, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market5), emgr.ObjectExp(object_depot0)), emgr.Real(Fraction(55853, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market1), emgr.ObjectExp(object_market2)), emgr.Real(Fraction(10337, 10)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market2), emgr.ObjectExp(object_market1)), emgr.Real(Fraction(10337, 10)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market1), emgr.ObjectExp(object_market3)), emgr.Real(Fraction(11383, 50)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market3), emgr.ObjectExp(object_market1)), emgr.Real(Fraction(11383, 50)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market1), emgr.ObjectExp(object_market4)), emgr.Real(Fraction(17531, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market4), emgr.ObjectExp(object_market1)), emgr.Real(Fraction(17531, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market1), emgr.ObjectExp(object_market5)), emgr.Real(Fraction(45857, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market5), emgr.ObjectExp(object_market1)), emgr.Real(Fraction(45857, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market2), emgr.ObjectExp(object_market3)), emgr.Real(Fraction(94403, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market3), emgr.ObjectExp(object_market2)), emgr.Real(Fraction(94403, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market2), emgr.ObjectExp(object_market4)), emgr.Real(Fraction(108073, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market4), emgr.ObjectExp(object_market2)), emgr.Real(Fraction(108073, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market2), emgr.ObjectExp(object_market5)), emgr.Real(Fraction(20657, 25)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market5), emgr.ObjectExp(object_market2)), emgr.Real(Fraction(20657, 25)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market3), emgr.ObjectExp(object_market4)), emgr.Real(Fraction(7327, 50)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market4), emgr.ObjectExp(object_market3)), emgr.Real(Fraction(7327, 50)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market3), emgr.ObjectExp(object_market5)), emgr.Real(Fraction(4749, 20)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market5), emgr.ObjectExp(object_market3)), emgr.Real(Fraction(4749, 20)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market4), emgr.ObjectExp(object_market5)), emgr.Real(Fraction(37071, 100)))
+        problem.set_initial_value(fluent_drive_cost(emgr.ObjectExp(object_market5), emgr.ObjectExp(object_market4)), emgr.Real(Fraction(37071, 100)))
+        problem.set_initial_value(fluent_bought(emgr.ObjectExp(object_goods0)), emgr.Int(0))
+        problem.set_initial_value(fluent_request(emgr.ObjectExp(object_goods0)), emgr.Int(38))
+        problem.set_initial_value(emgr.FluentExp(fluent_total_cost), emgr.Int(0))
+        problem.add_goal(goal=emgr.And(emgr.LE(fluent_request(emgr.ObjectExp(object_goods0)), fluent_bought(emgr.ObjectExp(object_goods0))), fluent_at(emgr.ObjectExp(object_truck0), emgr.ObjectExp(object_depot0))))
+        return problem
+
+    def get_description(self):
+        return 'TPP'
+
+    def version(self):
+        return 1

@@ -3,7 +3,7 @@ from unified_planning.model import problem
 from unified_planning.shortcuts import *
 from planning_tests.numeric_planning.up_problems.simple_linear_conditions import UPEqualityConditions, UPGreaterLowerConditions, UPNegativeConditions, UPGreaterThanConditions, UPLowerThanConditions
 from planning_tests.utility.util import TestUtil
-from planning_tests.utility.planner_names import get_planner_names
+from planning_tests.utility.planner_names import anytime_names
 import pytest
 
 
@@ -16,7 +16,7 @@ class TestSimpleLinearConditions:
 	problem_lower_than_conditions = UPGreaterThanConditions(expected_version=1)
 	problem_greater_than_conditions = UPLowerThanConditions(expected_version=1)
 
-	planner_names = get_planner_names(problem_equality.get_problem().kind)
+	planner_names = anytime_names(problem_equality.get_problem().kind)
 
 
 
@@ -30,6 +30,4 @@ class TestSimpleLinearConditions:
 	("test_lower_than_conditions",problem_lower_than_conditions),
 	("test_greater_lower_conditions", problem_greater_lower_conditions)])
 	def test_simple_linear_conditions(self,planner_name,problem_name,problem):
-		TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name)
-
-	
+		TestUtil.execute_anytime_planning_test(problem.get_problem(),planner_name)

@@ -18,7 +18,7 @@ class TestFarmland:
 
  	#we check only the first problem, since the domain is the same for all the problems
 	planner_names = get_planner_names(farmland_2_100_1229.get_problem().kind)
-	print(planner_names)
+	
 	@pytest.mark.all
 	@pytest.mark.farmland
 	@pytest.mark.simple
