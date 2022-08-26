@@ -11,5 +11,4 @@ else:
 
 if __name__ == "__main__":
     pytest.main(["-rA","-m", tests ,os.path.join(TEST_REPO_DIR, 'planning_tests/classical_planning/operation_modes/oneshot'),
-                 os.path.join(TEST_REPO_DIR, 'planning_tests/numeric_planning/operation_modes/oneshot'),
-                 os.path.join(TEST_REPO_DIR, 'planning_tests/temporal_planning/operation_modes/oneshot')])
+                 os.path.join(TEST_REPO_DIR, 'planning_tests/numeric_planning/operation_modes/oneshot')])

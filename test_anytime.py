@@ -3,12 +3,12 @@ from unified_planning.shortcuts import*
 from planning_tests.utility.util import TestUtil
 from planning_tests.utility.planner_names import anytime_names
 from planning_tests.numeric_planning.pddl_problems.rovers.rovers import  rovers_pfile2,rovers_pfile3,rovers_pfile4,rovers_pfile5
+from planning_tests.temporal_planning.pddl_problems.depots.depots import depots_pfile1
 import pytest
 import sys
 
-
-
-
+depots_pfile1 = depots_pfile1(expected_version=1)
+print(depots_pfile1.get_problem().kind)
     
 plans = []
   
