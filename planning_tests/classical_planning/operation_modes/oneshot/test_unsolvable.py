@@ -1,18 +1,13 @@
-from unittest import TestCase, main
+import pytest
 
 from planning_tests.classical_planning.problems.problem_basic_unsolvable import UPBasicUnsolvable
-from planning_tests.classical_planning.operation_modes.oneshot.util import run_all_oneshot_planners_on_unsolvable_problem
+from planning_tests.classical_planning.operation_modes.oneshot.util import run_oneshot_planner_on_unsolvable_problem
 
-class TestUnsolvable(TestCase):
-    def setUp(self):
-        TestCase.setUp(self)
-        self.unsolvable_problem = UPBasicUnsolvable(expected_version=1)
-
-    def test_optimal_on_unsolvable(self):
-        problem = self.unsolvable_problem
+class TestUnsolvable:
+    
+    @pytest.mark.all
+    @pytest.mark.simple 
+    def test_unsolvable_problem(self, oneshot_planner_name):
+        problem = UPBasicUnsolvable(expected_version=1)
         up_problem = problem.get_problem()
-        run_all_oneshot_planners_on_unsolvable_problem(up_problem)
-
-
-if __name__ == "__main__":
-    main()
+        run_oneshot_planner_on_unsolvable_problem(oneshot_planner_name, up_problem)

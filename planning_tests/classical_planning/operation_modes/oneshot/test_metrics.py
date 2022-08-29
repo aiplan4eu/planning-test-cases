@@ -1,30 +1,22 @@
-from unittest import TestCase, main
+import pytest
 
-from planning_tests.classical_planning.operation_modes.oneshot.util import run_all_oneshot_planners_on_solvable_problem
+from planning_tests.classical_planning.operation_modes.oneshot.util import run_oneshot_planner_on_solvable_problem
 from planning_tests.classical_planning.problems.problem_metric import UPCostMetricWithConstantCosts
 from planning_tests.classical_planning.problems.problem_metric import UPLengthMetric
 
-class TestPlanCost(TestCase):
-    def setUp(self):
-        TestCase.setUp(self)
-        self.problem = UPCostMetricWithConstantCosts(expected_version=1)
-        self.optimal_cost = 4
+class TestMetric:
+    @pytest.mark.all
+    @pytest.mark.simple 
+    def test_plan_cost(self, oneshot_planner_name):
+        problem = UPCostMetricWithConstantCosts(expected_version=1)
+        up_problem = problem.get_problem()
+        optimal_cost = 4
+        run_oneshot_planner_on_solvable_problem(oneshot_planner_name, up_problem, optimal_cost)
 
-    def test_basic(self):
-        up_problem = self.problem.get_problem()
-        run_all_oneshot_planners_on_solvable_problem(up_problem, self.optimal_cost)
-
-
-class TestPlanLength(TestCase):
-    def setUp(self):
-        TestCase.setUp(self)
-        self.problem = UPLengthMetric(expected_version=1)
-        self.optimal_cost = 1
-
-    def test_basic(self):
-        up_problem = self.problem.get_problem()
-        run_all_oneshot_planners_on_solvable_problem(up_problem, self.optimal_cost)
-
-
-if __name__ == "__main__":
-    main()
+    @pytest.mark.all
+    @pytest.mark.simple 
+    def test_plan_length(self, oneshot_planner_name):
+        problem = UPLengthMetric(expected_version=1)
+        up_problem = problem.get_problem()
+        optimal_cost = 1
+        run_oneshot_planner_on_solvable_problem(oneshot_planner_name, up_problem, optimal_cost)

@@ -6,17 +6,6 @@ from unified_planning.engines import ValidationResultStatus
 from unittest import TestCase, main
 
 
-def run_all_oneshot_planners_on_solvable_problem(up_problem, optimal_cost=None,
-        validate=True):
-
-    factory = get_env().factory
-    planner_names = [n for n in factory.engines
-                     if factory.engine(n).is_oneshot_planner()]
-
-    for p in planner_names:
-        run_oneshot_planner_on_solvable_problem(p, up_problem, optimal_cost, validate)
-
-
 def run_oneshot_planner_on_solvable_problem(planner_name, up_problem,
     optimal_cost=None, validate=True):
     unified_planning.shortcuts.get_env().credits_stream = None # silence credits
@@ -87,19 +76,14 @@ def run_oneshot_planner_on_solvable_problem(planner_name, up_problem,
                 assert result.status != PlanGenerationResultStatus.UNSOLVABLE_PROVEN
 
 
-def run_all_oneshot_planners_on_unsolvable_problem(up_problem):
+def run_oneshot_planner_on_unsolvable_problem(planner_name, up_problem):
     unified_planning.shortcuts.get_env().credits_stream = None # silence credits
-    factory = get_env().factory
-    planner_names = [n for n in get_env().factory.engines
-                       if factory.engine(n).is_oneshot_planner()]
-    for p in planner_names:
-        print(p)
-        with OneshotPlanner(name=p) as planner:
-            if planner.supports(up_problem.kind):
+    with OneshotPlanner(name=planner_name) as planner:
+        if planner.supports(up_problem.kind):
 
-                result = planner.solve(up_problem)
-                assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
-                # result status must reflect that there is no plan
-                assert result.status in (PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
-                                         PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
-                assert not result.plan
+            result = planner.solve(up_problem)
+            assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
+            # result status must reflect that there is no plan
+            assert result.status in (PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
+                                     PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
+            assert not result.plan
