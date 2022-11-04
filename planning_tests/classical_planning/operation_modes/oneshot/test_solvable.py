@@ -15,7 +15,12 @@ from unified_planning.engines import ValidationResultStatus
 from unified_planning.shortcuts import *
 
 unified_planning.shortcuts.get_env().credits_stream = None # silence credits
-    
+
+
+@pytest.fixture()
+def is_simple(request):
+    return "simple" in  (m.name for m in request.node.own_markers)
+
 @pytest.fixture(scope="class")
 def result_cache():
     class ResultCache:
@@ -75,10 +80,14 @@ tpp_pfile6 = tpp_pfile6(expected_version=1)
     ])
 class TestSolvable:
 
-    def test_plan_validates(self, oneshot_planner_name, problem_name, problem, optimal_cost, result_cache):
+    def test_plan_validates(self, oneshot_planner_name, problem_name, problem,
+            optimal_cost, result_cache, is_simple):
         up_problem = problem.get_problem()
-        if not OneshotPlanner(name=oneshot_planner_name).supports(up_problem.kind):
+        planner = OneshotPlanner(name=oneshot_planner_name)
+        if not planner.supports(up_problem.kind):
             pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
+        if not is_simple and planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+            pytest.skip("skip optimal planner on non-simple task")
         result = result_cache.result(oneshot_planner_name, problem)
         if not result.plan:
             pytest.skip("{} did not find a plan".format(oneshot_planner_name))
@@ -96,10 +105,13 @@ class TestSolvable:
             assert check.status is ValidationResultStatus.VALID
 
     def test_optimal_quality(self, oneshot_planner_name, problem_name, problem,
-                             optimal_cost, result_cache):
+                             optimal_cost, result_cache, is_simple):
         up_problem = problem.get_problem()
-        if not OneshotPlanner(name=oneshot_planner_name).supports(up_problem.kind):
+        planner = OneshotPlanner(name=oneshot_planner_name)
+        if not planner.supports(up_problem.kind):
             pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
+        if not is_simple and planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+            pytest.skip("skip optimal planner on non-simple task")
         result = result_cache.result(oneshot_planner_name, problem)
         if result.status is not PlanGenerationResultStatus.SOLVED_OPTIMALLY:
             pytest.skip("{} does not claim solution to be optimal".format(oneshot_planner_name))
@@ -123,15 +135,18 @@ class TestSolvable:
             else:
                 assert optimal_cost == len(result.plan.actions)
 
-    def test_valid_result_status(self, oneshot_planner_name, problem_name, problem, optimal_cost, result_cache):
+    def test_valid_result_status(self, oneshot_planner_name, problem_name,
+            problem, optimal_cost, result_cache, is_simple):
         up_problem = problem.get_problem()
-        if not OneshotPlanner(name=oneshot_planner_name).supports(up_problem.kind):
+        planner = OneshotPlanner(name=oneshot_planner_name)
+        if not planner.supports(up_problem.kind):
             pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
+        if not is_simple and planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+            pytest.skip("skip optimal planner on non-simple task")
         result = result_cache.result(oneshot_planner_name, problem)
         if result.plan:
             # if the planner guarantees optimality, this should be reflected in
             # the result status
-            planner = get_env().factory.engine(oneshot_planner_name)
             if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
                 assert result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY
             else:
