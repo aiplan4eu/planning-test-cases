@@ -1,18 +1,28 @@
-from unittest import TestCase, main
+import pytest
 
 from planning_tests.classical_planning.problems.problem_basic_unsolvable import UPBasicUnsolvable
-from planning_tests.classical_planning.operation_modes.oneshot.util import run_all_oneshot_planners_on_unsolvable_problem
+from unified_planning.engines import PlanGenerationResultStatus
+import unified_planning
+from unified_planning.shortcuts import *
 
-class TestUnsolvable(TestCase):
-    def setUp(self):
-        TestCase.setUp(self)
-        self.unsolvable_problem = UPBasicUnsolvable(expected_version=1)
-
-    def test_optimal_on_unsolvable(self):
-        problem = self.unsolvable_problem
+class TestUnsolvable:
+    
+    @pytest.mark.all
+    @pytest.mark.simple 
+    @pytest.mark.unsolvable
+    def test_unsolvable_problem(self, oneshot_planner_name):
+        problem = UPBasicUnsolvable(expected_version=1)
         up_problem = problem.get_problem()
-        run_all_oneshot_planners_on_unsolvable_problem(up_problem)
-
-
-if __name__ == "__main__":
-    main()
+        unified_planning.shortcuts.get_env().credits_stream = None # silence credits
+        with OneshotPlanner(name=oneshot_planner_name) as planner:
+            if not planner.supports(up_problem.kind):
+                pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
+            result = planner.solve(up_problem)
+            assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
+            # result status must reflect that there has no plan been found.
+            assert result.status in (PlanGenerationResultStatus.TIMEOUT,
+                                     PlanGenerationResultStatus.MEMOUT,
+                                     PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
+                                     PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
+                                     PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
+            assert not result.plan
