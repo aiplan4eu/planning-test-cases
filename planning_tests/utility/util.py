@@ -30,6 +30,7 @@ class TestUtil:
                 result = planner.solve(problem)
                 plan = result.plan
                 print(plan)
+                print(len(plan.actions))
                 with PlanValidator(problem_kind=problem.kind,plan_kind=plan.kind) as validator:
                     check = validator.validate(problem, plan)
                     if expected_plan_length is not None:
