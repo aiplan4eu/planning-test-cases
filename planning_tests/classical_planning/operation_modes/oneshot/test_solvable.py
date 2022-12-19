@@ -147,11 +147,15 @@ class TestSolvable:
         if result.plan:
             # if the planner guarantees optimality, this should be reflected in
             # the result status
-            if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
-                assert result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY
+            metrics = up_problem.quality_metrics
+            if not metrics:
+                assert result.status is PlanGenerationResultStatus.SOLVED_SATISFICING
             else:
-                assert result.status in (PlanGenerationResultStatus.SOLVED_OPTIMALLY,
-                                         PlanGenerationResultStatus.SOLVED_SATISFICING)
+                if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+                    assert result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY
+                else:
+                    assert result.status in (PlanGenerationResultStatus.SOLVED_OPTIMALLY,
+                                             PlanGenerationResultStatus.SOLVED_SATISFICING)
         else:
             assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
             # We are only running the test on solvable instances
