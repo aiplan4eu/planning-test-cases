@@ -1,8 +1,6 @@
-# TODO test somewhere that presumably optimal planners declare themeselves such
 import pytest
 
 from planning_tests.classical_planning.problems.problem_basic import UPBasic
-from planning_tests.classical_planning.problems.problem_basic_unsolvable import UPBasicUnsolvable
 from planning_tests.classical_planning.problems.problem_metric import UPCostMetricWithConstantCosts
 from planning_tests.classical_planning.problems.problem_metric import UPLengthMetric
 from planning_tests.classical_planning.problems.problem_conditional_effects import UPConditionalEffects
@@ -84,6 +82,18 @@ class TestGrounding:
     def test_plan_transfers(self, grounder_name, problem_name, problem,
             result_cache, is_simple):
         up_problem = problem.get_problem()
+        grounder = Compiler(name=grounder_name)
+        if not grounder.supports(up_problem.kind):
+            pytest.skip("{} does not support problem kind".format(grounder_name))
+        result = result_cache.result(grounder_name, problem)
+        map_back = result.map_back_action_instance
+        ground_problem = result.problem
+
+        # solve ground_problem with arbitrary planner
+
+
+        up_problem = problem.get_problem()
+
         planner = OneshotPlanner(name=oneshot_planner_name)
         if not planner.supports(up_problem.kind):
             pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
@@ -110,12 +120,12 @@ class TestGrounding:
         up_problem = problem.get_problem()
         grounder = Compiler(name=grounder_name)
         if not grounder.supports(up_problem.kind):
-            pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
+            pytest.skip("{} does not support problem kind".format(grounder_name))
         result = result_cache.result(grounder_name, problem)
         map_back = result.map_back_action_instance
         ground_problem = result.problem
         for a in ground_problem.actions:
-            assert map_back_action_instance[a] # TODO how to test this?
+            assert a in map_back_action_instance
 
 
     def test_result_is_grounded(self, grounder_name, problem_name,
@@ -123,7 +133,7 @@ class TestGrounding:
         up_problem = problem.get_problem()
         grounder = Compiler(name=grounder_name)
         if not grounder.supports(up_problem.kind):
-            pytest.skip("{} does not support problem kind".format(oneshot_planner_name))
+            pytest.skip("Grounder {} does not support problem kind".format(grounder_name))
         result = result_cache.result(grounder_name, problem)
        
         ground_problem = result.problem
