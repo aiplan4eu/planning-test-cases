@@ -1,5 +1,5 @@
 from unified_planning.environment import get_env
-from unified_planning.engines.mixin.compiler import CompilationKind
+from unified_planning.engines.mixins.compiler import CompilationKind
 
 import pytest
 
