@@ -1,16 +1,21 @@
 # TODO test somewhere that presumably optimal planners declare themeselves such
 import pytest
 
-from planning_tests.classical_planning.problems.problem_basic import UPBasic
-from planning_tests.classical_planning.problems.problem_basic_unsolvable import UPBasicUnsolvable
-from planning_tests.classical_planning.problems.problem_metric import UPCostMetricWithConstantCosts
-from planning_tests.classical_planning.problems.problem_metric import UPLengthMetric
-from planning_tests.classical_planning.problems.problem_conditional_effects import UPConditionalEffects
-from planning_tests.classical_planning.pddl_problems.depots.depots import depots_pfile1, depots_pfile2, depots_pfile3
-from planning_tests.classical_planning.pddl_problems.tpp.tpp import tpp_pfile1, tpp_pfile2, tpp_pfile3, tpp_pfile6
-from planning_tests.classical_planning.problems.problem_conditional_effects import UPConditionalEffects
-from unified_planning.engines import OptimalityGuarantee, PlanGenerationResultStatus
-from unified_planning.engines import ValidationResultStatus
+from planning_tests.classical_planning import (
+        UPBasic,
+        UPConditionalEffects,
+        UPCostMetricWithConstantCosts,
+        UPLengthMetric,
+        depots_pfile1,
+        depots_pfile2,
+        depots_pfile3,
+        tpp_pfile1,
+        tpp_pfile2,
+        tpp_pfile3,
+        tpp_pfile6
+        )
+from unified_planning.engines import (OptimalityGuarantee,
+        PlanGenerationResultStatus, ValidationResultStatus)
 
 from unified_planning.shortcuts import *
 
