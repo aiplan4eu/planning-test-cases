@@ -1,23 +1,34 @@
 import pytest
 
-from planning_tests.classical_planning.problems.problem_basic import UPBasic
-from planning_tests.classical_planning.problems.problem_metric import UPCostMetricWithConstantCosts
-from planning_tests.classical_planning.problems.problem_metric import UPLengthMetric
-from planning_tests.classical_planning.problems.problem_conditional_effects import UPConditionalEffects
-from planning_tests.classical_planning.pddl_problems.depots.depots import depots_pfile1, depots_pfile2, depots_pfile3
-from planning_tests.classical_planning.pddl_problems.tpp.tpp import tpp_pfile1, tpp_pfile2, tpp_pfile3, tpp_pfile6
-from planning_tests.classical_planning.problems.problem_conditional_effects import UPConditionalEffects
-from unified_planning.engines import OptimalityGuarantee, PlanGenerationResultStatus
+from planning_tests.classical_planning import (
+        UPBasic,
+        UPConditionalEffects,
+        UPCostMetricWithConstantCosts,
+        UPLengthMetric,
+        depots_pfile1,
+        depots_pfile2,
+        depots_pfile3,
+        tpp_pfile1,
+        tpp_pfile2,
+        tpp_pfile3,
+        tpp_pfile6
+        )
 from unified_planning.engines import ValidationResultStatus
+from unified_planning.shortcuts import (
+        get_env,
+        CompilationKind,
+        Compiler,
+        OneshotPlanner,
+        PlanValidator
+        )
 
-from unified_planning.shortcuts import *
-
-unified_planning.shortcuts.get_env().credits_stream = None # silence credits
+get_env().credits_stream = None  # silence credits
 
 
 @pytest.fixture()
 def is_simple(request):
-    return "simple" in  (m.name for m in request.node.own_markers)
+    return "simple" in (m.name for m in request.node.own_markers)
+
 
 @pytest.fixture(scope="class")
 def result_cache():
@@ -29,8 +40,10 @@ def result_cache():
             if (grounder_name, problem) not in self._results:
                 up_problem = problem.get_problem()
                 with Compiler(name=grounder_name) as grounder:
-                    assert(grounder.supports_compilation(CompilationKind.GROUNDING))
-                    res = grounder.compile(up_problem, CompilationKind.GROUNDING)
+                    assert(grounder.supports_compilation(
+                                CompilationKind.GROUNDING))
+                    res = grounder.compile(up_problem,
+                                           CompilationKind.GROUNDING)
                     self._results[(grounder_name, problem)] = res
             return self._results[(grounder_name, problem)]
 
@@ -50,41 +63,44 @@ tpp_pfile2 = tpp_pfile2(expected_version=1)
 tpp_pfile3 = tpp_pfile3(expected_version=1)
 tpp_pfile6 = tpp_pfile6(expected_version=1)
 
+
 @pytest.mark.all
 @pytest.mark.solvable
-@pytest.mark.parametrize("problem_name, problem",
-    [
+@pytest.mark.parametrize("problem_name, problem", [
         pytest.param('prob_basic', basic, marks=pytest.mark.simple),
-        pytest.param('prob_cond_effects', conditional_effects, marks=pytest.mark.simple),
-        pytest.param('prob_cost_metric', cost_metric,
-            marks=pytest.mark.simple),
-        pytest.param('prob_length_metric', length_metric, 
-            marks=pytest.mark.simple),
         pytest.param('prob_cond_effects', conditional_effects,
-            marks=pytest.mark.simple),
+                     marks=pytest.mark.simple),
+        pytest.param('prob_cost_metric', cost_metric,
+                     marks=pytest.mark.simple),
+        pytest.param('prob_length_metric', length_metric,
+                     marks=pytest.mark.simple),
+        pytest.param('prob_cond_effects', conditional_effects,
+                     marks=pytest.mark.simple),
+        # depots is prohibitively hard for the built-in grounder
         pytest.param("depots_pfile1", depots_pfile1,
-            marks=[pytest.mark.simple, pytest.mark.depots]),
+                     marks=[pytest.mark.medium, pytest.mark.depots]),
         pytest.param("depots_pfile2", depots_pfile2,
-            marks=[pytest.mark.simple, pytest.mark.depots]),
+                     marks=[pytest.mark.medium, pytest.mark.depots]),
         pytest.param("depots_pfile3", depots_pfile3,
-            marks=[pytest.mark.medium, pytest.mark.depots]),
+                     marks=[pytest.mark.medium, pytest.mark.depots]),
         pytest.param("tpp_pfile1", tpp_pfile1,
-            marks=[pytest.mark.simple, pytest.mark.TPP]),
+                     marks=[pytest.mark.simple, pytest.mark.TPP]),
         pytest.param("tpp_pfile2", tpp_pfile2,
-            marks=[pytest.mark.simple, pytest.mark.TPP]),
+                     marks=[pytest.mark.simple, pytest.mark.TPP]),
         pytest.param("tpp_pfile3", tpp_pfile3,
-            marks=[pytest.mark.simple, pytest.mark.TPP]),
+                     marks=[pytest.mark.simple, pytest.mark.TPP]),
         pytest.param("tpp_pfile6", tpp_pfile6,
-            marks=[pytest.mark.medium, pytest.mark.TPP]),
+                     marks=[pytest.mark.medium, pytest.mark.TPP]),
     ])
 class TestGrounding:
 
     def test_plan_transfers(self, grounder_name, problem_name, problem,
-            result_cache, is_simple):
+                            result_cache, is_simple):
         up_problem = problem.get_problem()
         grounder = Compiler(name=grounder_name)
         if not grounder.supports(up_problem.kind):
-            pytest.skip("{} does not support problem kind".format(grounder_name))
+            pytest.skip("{} does not support problem kind".format(
+                        grounder_name))
         result = result_cache.result(grounder_name, problem)
         map_back = result.map_back_action_instance
         ground_problem = result.problem
@@ -109,28 +125,15 @@ class TestGrounding:
             check = validator.validate(validation_problem, transferred_plan)
             assert check.status is ValidationResultStatus.VALID
 
-#    def test_map_back_action_instance_is_complete(self, grounder_name,
-#            problem_name, problem, result_cache):
-#        up_problem = problem.get_problem()
-#        grounder = Compiler(name=grounder_name)
-#        if not grounder.supports(up_problem.kind):
-#            pytest.skip("{} does not support problem kind".format(grounder_name))
-#        result = result_cache.result(grounder_name, problem)
-#        map_back = result.map_back_action_instance
-#        ground_problem = result.problem
-#        for a in ground_problem.actions:
-#            la = map_back(a)
-##            assert a in map_back
-#
-
     def test_result_is_grounded(self, grounder_name, problem_name,
-            problem, result_cache):
+                                problem, result_cache):
         up_problem = problem.get_problem()
         grounder = Compiler(name=grounder_name)
         if not grounder.supports(up_problem.kind):
-            pytest.skip("Grounder {} does not support problem kind".format(grounder_name))
+            pytest.skip("Grounder {} does not support problem kind".format(
+                        grounder_name))
         result = result_cache.result(grounder_name, problem)
-       
+
         ground_problem = result.problem
         for a in ground_problem.actions:
             assert not a.parameters

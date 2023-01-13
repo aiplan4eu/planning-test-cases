@@ -1,6 +1,6 @@
 import pytest
 
-from planning_tests.classical_planning.problems.problem_basic_unsolvable import UPBasicUnsolvable
+from planning_tests.classical_planning import UPBasicUnsolvable
 from unified_planning.engines import PlanGenerationResultStatus
 import unified_planning
 from unified_planning.shortcuts import *
