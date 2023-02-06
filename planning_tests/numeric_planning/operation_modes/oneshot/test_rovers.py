@@ -2,7 +2,7 @@ import unified_planning
 from unified_planning.shortcuts import*
 from planning_tests.utility.util import TestUtil
 from planning_tests.utility.planner_names import get_planner_names, get_planner_names_opt
-from planning_tests.numeric_planning.pddl_problems.rovers.rovers import  rovers_pfile2,rovers_pfile3,rovers_pfile4,rovers_pfile5
+from planning_tests.numeric_planning.pddl_problems.rovers.rovers import  rovers_pfile2,rovers_pfile3,rovers_pfile4,rovers_pfile5,rovers_pfile2_FV
 import pytest
 import sys
 
@@ -13,6 +13,7 @@ class TestRovers:
     rovers_pfile2 = rovers_pfile2(expected_version=1)
     rovers_pfile4 = rovers_pfile4(expected_version=1)
     rovers_pfile5 = rovers_pfile5(expected_version=1)
+    rovers_pfile2_FV = rovers_pfile2_FV(expected_version=1)
     #we check only the first problem, since the domain is the same for all the problems
     planner_names = get_planner_names(rovers_pfile2.get_problem().kind)
     planner_names_opt = get_planner_names_opt(rovers_pfile2.get_problem().kind)
@@ -46,3 +47,9 @@ class TestRovers:
     def test_rovers_optimal(self,planner_name,problem_name,problem,expected_plan_length):
         TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'],expected_plan_length)
 
+
+    @pytest.mark.prova
+    @pytest.mark.parametrize("planner_name",planner_names)
+    @pytest.mark.parametrize("problem_name,problem",[("rovers_pfile2",rovers_pfile2_FV)])
+    def test_rovers_optimal_minimize_recharges(self,planner_name,problem_name,problem):
+        TestUtil.execute_one_shot_planning_test_minimize_value(problem.get_problem(),planner_name,[problem_name +'.pddl'])
