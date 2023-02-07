@@ -49,13 +49,13 @@ class TestUtil:
 
 
     @staticmethod
-    def execute_anytime_planning_test(problem,planner_name,problem_name = "",timeout=None):
+    def execute_anytime_planning_test(problem,planner_name,problem_name = "",timeout=10):
                     
        with AnytimePlanner(name=planner_name, anytime_guarantee="INCREASING_QUALITY") as planner:
             #this if might be deleted
            if planner.supports(problem.kind) and planner.is_anytime_planner():
                 solutions = []
-                for p in planner.get_solutions(problem,2):
+                for p in planner.get_solutions(problem,timeout):
                     if p.plan is not None:
                         solutions.append(p.plan)
                         print(p.plan)
