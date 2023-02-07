@@ -18,8 +18,8 @@ class TestUtil:
             if planner.supports(problem.kind):
                 result = planner.solve(problem)
                 plan = result.plan
+                print("actions performed: " + str(len(plan.actions)))
                 print(plan)
-                print(len(plan.actions))
                 with PlanValidator(problem_kind=problem.kind,plan_kind=plan.kind) as validator:
                     check = validator.validate(problem, plan)
                     if expected_plan_length is not None:
@@ -35,8 +35,8 @@ class TestUtil:
             if planner.supports(problem.kind):
                 result = planner.solve(problem)
                 plan = result.plan
+                print("actions performed: " + str(len(plan.actions)))
                 print(plan)
-                print(len(plan.actions))
                 with PlanValidator(problem_kind=problem.kind,plan_kind=plan.kind) as validator:
                     check = validator.validate(problem, plan)
                     if expected_plan_length is not None:
