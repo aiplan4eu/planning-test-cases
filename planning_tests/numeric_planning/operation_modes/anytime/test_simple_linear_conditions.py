@@ -30,4 +30,6 @@ class TestSimpleLinearConditions:
 	("test_lower_than_conditions",problem_lower_than_conditions),
 	("test_greater_lower_conditions", problem_greater_lower_conditions)])
 	def test_simple_linear_conditions(self,planner_name,problem_name,problem):
-		TestUtil.execute_anytime_planning_test(problem.get_problem(),planner_name)
+		problem_with_metric = problem.get_problem()
+		problem_with_metric.add_quality_metric(MinimizeSequentialPlanLength())
+		TestUtil.execute_anytime_planning_test(problem_with_metric,planner_name)

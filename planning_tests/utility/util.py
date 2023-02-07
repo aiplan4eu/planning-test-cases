@@ -51,8 +51,7 @@ class TestUtil:
     @staticmethod
     def execute_anytime_planning_test(problem,planner_name,problem_name = "",timeout=None):
                     
-       #with AnytimePlanner(name=planner_name, anytime_guarantee="INCREASING_QUALITY") as planner:
-       with AnytimePlanner(name=planner_name) as planner:
+       with AnytimePlanner(name=planner_name, anytime_guarantee="INCREASING_QUALITY") as planner:
             #this if might be deleted
            if planner.supports(problem.kind) and planner.is_anytime_planner():
                 solutions = []

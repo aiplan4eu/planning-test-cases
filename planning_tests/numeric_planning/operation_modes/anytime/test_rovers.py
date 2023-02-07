@@ -27,7 +27,9 @@ class TestRovers:
     ("rovers_pfile3",rovers_pfile3 ),
     ("rovers_pfile4",rovers_pfile4 )])
     def test_rovers(self,planner_name,problem_name,problem):
-        TestUtil.execute_anytime_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
+        problem_with_metric = problem.get_problem()
+        problem_with_metric.add_quality_metric(MinimizeSequentialPlanLength())
+        TestUtil.execute_anytime_planning_test(problem_with_metric,planner_name,[problem_name +'.pddl'])
 
 
     @pytest.mark.all
@@ -36,5 +38,7 @@ class TestRovers:
     @pytest.mark.parametrize("planner_name",planner_names)
     @pytest.mark.parametrize("problem_name,problem",[("rovers_pfile5",rovers_pfile5 )])
     def test_rovers_medium(self,planner_name,problem_name,problem):
-        TestUtil.execute_anytime_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
+        problem_with_metric = problem.get_problem()
+        problem_with_metric.add_quality_metric(MinimizeSequentialPlanLength())
+        TestUtil.execute_anytime_planning_test(problem_with_metric,planner_name,[problem_name +'.pddl'])
 
