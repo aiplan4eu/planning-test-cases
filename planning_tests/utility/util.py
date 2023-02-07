@@ -1,5 +1,3 @@
-import os
-import sys
 from unified_planning.shortcuts import OneshotPlanner, PlanValidator, AnytimePlanner
 
 
@@ -58,7 +56,9 @@ class TestUtil:
                 for p in planner.get_solutions(problem,timeout):
                     if p.plan is not None:
                         solutions.append(p.plan)
+                        print("solution number: " + str(len(solutions)))
                         print(p.plan)
+                        print("actions performed: " + str(len(p.plan.actions)))
                         print("\n")
 
                 with PlanValidator(problem_kind=problem.kind,plan_kind=solutions[0].kind) as validator:
