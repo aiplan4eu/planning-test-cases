@@ -1,15 +1,10 @@
-name: CI
+name: Report
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-  workflow_dispatch:
 
 jobs:
-  build:
+  report:
     runs-on: ubuntu-latest
     container: aiplan4eu/unified-planning
 
@@ -29,14 +24,11 @@ jobs:
       - name: Install Unified-Planning
         run: python3 -m pip install unified-planning/
 
-      - name: Checkout Pyperplan Unified-Planning interface
-        uses: actions/checkout@v2
-        with:
-          repository: aiplan4eu/up-pyperplan
-          path: up-pyperplan
+      - name: Install tamer
+        run: python3 -m pip install up-tamer --pre
 
-      - name: Install Pyperplan Unified-Planning interface
-        run: python3 -m pip install up-pyperplan/
+      - name: Install Aries (dev-build)
+        run: python3 -m pip install https://github.com/plaans/aries/releases/download/latest/up_aries.tar.gz
 
-      - name: Run tests
-        run: python3 runner.py
+      - name: Report
+        run: 'python3 report.py --prefix up: ; true'

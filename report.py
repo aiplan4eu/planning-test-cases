@@ -157,7 +157,6 @@ Usage
         prefix = planners.pop(prefix_opt)
     except ValueError:
         prefix = ""
-    print(prefix_opt)
 
     errors = report(*planners, problem_prefix=prefix)
     if len(errors) > 0:
