@@ -21,6 +21,7 @@ class TestCase:
         self._problem = problem
         self._solvable = solvable
 
+    @property
     def problem(self) -> unified_planning.model.Problem:
         return self._problem
 
@@ -30,7 +31,7 @@ class TestCase:
 
     @property
     def name(self) -> str:
-        return self.problem().name
+        return self.problem.name
 
 
 class PDDLTestCase(TestCase):
@@ -43,6 +44,7 @@ class PDDLTestCase(TestCase):
         self._problem_file = problem
         super().__init__(problem=None, solvable=solvable)
 
+    @property
     def problem(self):
         if self._problem is None:
             # problem has not been parsed yet, parse and store
