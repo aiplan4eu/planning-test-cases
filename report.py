@@ -17,7 +17,7 @@ get_environment().credits_stream = None  # silence credits
 
 def all_test_cases():
     """Returns all test cases of this repository"""
-    return up_tests() + planning_tests.refinement_planning.hddl.problems()
+    return up_tests() + planning_tests.refinement_planning.problems()
 
 
 def oneshot_planners():
