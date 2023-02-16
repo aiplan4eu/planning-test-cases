@@ -1,3 +1,6 @@
+from fractions import Fraction
+from typing import Optional, Union
+
 import unified_planning
 
 class TestCaseProblem(object):
@@ -17,9 +20,10 @@ class TestCaseProblem(object):
     
 
 class TestCase:
-    def __init__(self, problem: unified_planning.model.Problem, solvable: bool):
+    def __init__(self, problem: unified_planning.model.Problem, solvable: bool, optimum: Optional[Union[int, Fraction]] = None):
         self._problem = problem
         self._solvable = solvable
+        self._optimum = optimum
 
     @property
     def problem(self) -> unified_planning.model.Problem:
@@ -32,6 +36,10 @@ class TestCase:
     @property
     def name(self) -> str:
         return self.problem.name
+
+    @property
+    def optimum(self) -> Optional[Union[int, Fraction]]:
+        return self._optimum
 
 
 class PDDLTestCase(TestCase):
