@@ -39,11 +39,12 @@ class TestDepots:
     def test_depots_medium(self,planner_name,problem_name,problem):
         TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
 
-    #@pytest.mark.prova
+    @pytest.mark.optimal
+    @pytest.mark.depotsopt
     @pytest.mark.parametrize("planner_name",planner_names_opt)
-    @pytest.mark.parametrize("problem_name,problem",[("depots_pfile1",depots_pfile1 ),
-    ("depots_pfile2",depots_pfile2 ),
-    ("depots_pfile3",depots_pfile3 )])
-    def test_depots_optimal(self,planner_name,problem_name,problem):
-        TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'])
+    @pytest.mark.parametrize("problem_name,problem,expected_plan_length",[("depots_pfile1",depots_pfile1,10 ),
+    ("depots_pfile2",depots_pfile2,15),
+    ("depots_pfile3",depots_pfile3,27)])
+    def test_depots_optimal(self,planner_name,problem_name,problem,expected_plan_length):
+        TestUtil.execute_one_shot_planning_test(problem.get_problem(),planner_name,[problem_name +'.pddl'],expected_plan_length)
 

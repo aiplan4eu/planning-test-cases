@@ -40,6 +40,7 @@ class TestRovers:
 
 
     @pytest.mark.optimal
+    @pytest.mark.roversopt
     @pytest.mark.parametrize("planner_name",planner_names_opt)
     @pytest.mark.parametrize("problem_name,problem,expected_plan_length",[("rovers_pfile2",rovers_pfile2,8 ),
     ("rovers_pfile3",rovers_pfile3,11 ),
