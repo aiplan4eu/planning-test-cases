@@ -58,3 +58,10 @@ class UPMABasic(TestCaseProblem):
 
         problem.add_goal(Dot(robot_a, pos(home1)))
         problem.add_goal(Dot(scale_a, open(open20_)))
+        return problem
+
+    def get_description(self):
+        return "ma_basic"
+
+    def version(self):
+        return 1
