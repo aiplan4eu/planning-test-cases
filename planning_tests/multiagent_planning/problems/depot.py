@@ -4,23 +4,6 @@ from unified_planning.model.multi_agent import *
 from planning_tests.commons.problem import TestCaseProblem
 
 
-class TestCaseProblem(object):
-    def __init__(self, expected_version):
-        if expected_version != self.version():
-            print(expected_version, self.version(), "Ooooooooooooooooooooo")
-            raise ValueError("Wrong version")
-        pass
-
-    def get_problem(self):
-        raise NotImplementedError
-
-    def get_description(self):
-        raise NotImplementedError
-
-    def version(self):
-        raise NotImplementedError
-
-
 class UPDepot(TestCaseProblem):
     def __init__(self, expected_version):
         TestCaseProblem.__init__(self, expected_version)
