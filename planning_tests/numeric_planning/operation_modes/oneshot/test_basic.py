@@ -12,7 +12,7 @@ class TestBasic(TestCase):
     def test_basic(self):
         up_problem = self.problem.get_problem()
 
-        planner_names = [n for n, s in get_env().factory.solvers.items() if s.is_oneshot_planner()]
+        planner_names = [n for n, s in get_environment().factory.solvers.items() if s.is_oneshot_planner()]
 
         for p in planner_names:
             with OneshotPlanner(name=p) as planner:

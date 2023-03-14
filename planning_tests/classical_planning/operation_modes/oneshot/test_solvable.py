@@ -19,7 +19,7 @@ from unified_planning.engines import (OptimalityGuarantee,
 
 from unified_planning.shortcuts import *
 
-unified_planning.shortcuts.get_env().credits_stream = None # silence credits
+unified_planning.shortcuts.get_environment().credits_stream = None # silence credits
 
 
 @pytest.fixture()
