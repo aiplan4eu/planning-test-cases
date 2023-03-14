@@ -12,6 +12,7 @@ def pytest_addoption(parser):
                           "Available values: a grounder name or 'all'")
 
 
+
 def pytest_generate_tests(metafunc):
     if "oneshot_planner_name" in metafunc.fixturenames:
         tags = set(metafunc.config.option.planner_name)
@@ -29,3 +30,10 @@ def pytest_generate_tests(metafunc):
                 get_environment().factory.engine(t).supports_compilation(
                     CompilationKind.GROUNDING)]
         metafunc.parametrize("grounder_name", tags, scope='session')
+    if "anytime_planner_name" in metafunc.fixturenames:
+        tags = set(metafunc.config.option.planner_name)
+        if not tags or 'all' in tags:
+            tags = [n for n in get_environment().factory.engines]
+        tags = [t for t in tags
+                if get_environment().factory.engine(t).is_anytime_planner()]
+        metafunc.parametrize("anytime_planner_name", tags, scope='session')
