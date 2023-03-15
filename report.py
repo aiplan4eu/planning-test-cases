@@ -36,7 +36,8 @@ def up_tests():
     for name, problem in get_example_problems().items():
         pb = problem.problem.clone()
         pb.name = f"up:{name}"
-        cases.append(TestCase(pb, solvable=True))
+        plans = [problem.plan] if problem.plan is not None else []
+        cases.append(TestCase(pb, solvable=True, valid_plans=plans))
     return cases
 
 
