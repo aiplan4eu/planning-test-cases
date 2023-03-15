@@ -1,8 +1,8 @@
 import os
 import sys
 import time
-
-from unified_planning.engines import PlanGenerationResultStatus, ValidationResultStatus, PlanGenerationResult
+from unified_planning.engines import PlanGenerationResultStatus, ValidationResultStatus, PlanGenerationResult, \
+    ValidationResult
 from unified_planning.plans import Plan
 
 from unified_planning.shortcuts import *
@@ -12,6 +12,15 @@ import planning_tests.refinement_planning.hddl
 from planning_tests.commons.problem import TestCase
 from planning_tests.commons.results import *
 
+USAGE = """Validates the results of solvers on a set of planning problems.
+Usage (default operation mode: oneshot):
+ - python report.py                          # will run all solvers on all problems
+ - python report.py aries tamer              # will run aries an tamer on all problems they support
+ - python report.py aries --prefix up:basic  # will run aries on all problems whose name starts with "up:basic"
+
+The test operation can be changed with `--mode plan-validation` or `--mode oneshot`. 
+"""
+
 get_environment().credits_stream = None  # silence credits
 
 
@@ -20,12 +29,20 @@ def all_test_cases():
     return up_tests() + planning_tests.refinement_planning.problems()
 
 
+def engines() -> List[Tuple[str, Engine]]:
+    """Returns all available engines."""
+    tags = [n for n in get_environment().factory.engines]
+    return [(t, get_environment().factory.engine(t)) for t in tags]
+
+
 def oneshot_planners():
     """All available oneshot planners."""
-    tags = [n for n in get_environment().factory.engines]
-    tags = [t for t in tags
-            if get_environment().factory.engine(t).is_oneshot_planner()]
-    return tags
+    return [t for t, e in engines() if e.is_oneshot_planner()]
+
+
+def validators():
+    """All available plan validators"""
+    return [t for t, e in engines() if e.is_plan_validator()]
 
 
 def up_tests():
@@ -42,6 +59,7 @@ def up_tests():
 
 
 def validate_plan(plan: Plan, problem: Problem) -> ResultSet:
+    """Validates a plan produced by a planner."""
     try:
         with PlanValidator(problem_kind=problem.kind) as validator:
             if not validator.supports_plan(plan.kind):
@@ -102,7 +120,7 @@ def check_result(test: TestCase, result: PlanGenerationResult, planner) -> Resul
     return output
 
 
-def run(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[str, str]]:
+def run_oneshot(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[str, str]]:
     errors = []
     for test_case in problems:
         print()
@@ -131,35 +149,87 @@ def run(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[
     return errors
 
 
-def report(*planners: str, problem_prefix: str = ""):
-    """Run all planners on all problems that start with the given prefix"""
+def report_oneshot(*planners: str, problem_prefix: str = ""):
+    """Run all oneshot planners on all problems that start with the given prefix"""
 
     if len(planners) == 0:
         planners = oneshot_planners()
 
     problems = all_test_cases()
     problems = [p for p in problems if p.name.startswith(problem_prefix)]
-    errors = run(planners, problems)
+    errors = run_oneshot(planners, problems)
+    if len(errors) > 0:
+        print("Errors:\n ", "\n  ".join(map(str, errors)))
+    return errors
+
+
+def report_validation(*engines: str, problem_prefix: str = ""):
+    """Checks that all given plan validators produce the correct output on test-caes."""
+    errors: List[Tuple[str, str]] = []  # all errors encountered
+    if len(engines) == 0:
+        engines = validators()
+    test_cases = all_test_cases()
+    test_cases = [p for p in test_cases if p.name.startswith(problem_prefix)]
+
+    def applicable_validators(pb, plan):
+        vals = [PlanValidator(name=validator_name) for validator_name in engines]
+        return filter(lambda e: e.supports(pb.kind) and e.supports_plan(plan.kind), vals)
+
+    for test_case in test_cases:
+        result: ValidationResult
+        for i, valid_plan in enumerate(test_case.valid_plans):
+            print()
+            print(f"{test_case.name} valid[{i}]".ljust(40), end='\n')
+            for validator in applicable_validators(test_case.problem, valid_plan):
+                print("|  ", validator.name.ljust(40), end='')
+                result = validator.validate(test_case.problem, valid_plan)
+                if result.status == ValidationResultStatus.VALID:
+                    print(Ok("Valid"))
+                else:
+                    print(Err(f"Incorrectly flagged as {result.status.name}"))
+                    errors.append((test_case.name, validator.name))
+
+        for i, invalid_plan in enumerate(test_case.invalid_plans):
+            print()
+            print(f"{test_case.name} invalid[{i}]".ljust(40), end='\n')
+            for validator in applicable_validators(test_case.problem, invalid_plan):
+                print("|  ", validator.name.ljust(40), end='')
+                result = validator.validate(test_case.problem, invalid_plan)
+                if result.status == ValidationResultStatus.INVALID:
+                    print(Ok("Invalid"))
+                else:
+                    print(Err(f"Incorrectly flagged as {result.status.name}"))
+                    errors.append((test_case.name, validator.name))
+
     if len(errors) > 0:
         print("Errors:\n ", "\n  ".join(map(str, errors)))
     return errors
 
 
 if __name__ == "__main__":
-    print("""Validate the results of solvers on a set of planning problems.
-Usage
- - python report.py                          # will run all solvers on all all problems
- - python report.py aries tamer              # will run aries an tamer on all problems they support 
- - python report.py aries --prefix up:basic  # will run aries on all problems whose name starts with "up:basic" """)
+    print(USAGE)
     planners = sys.argv[1:]
-    try:
+    try:  # extract "--prefix PREFIX"
         prefix_opt = planners.index("--prefix")
         planners.pop(prefix_opt)
         prefix = planners.pop(prefix_opt)
     except ValueError:
         prefix = ""
+    try:  # extract "--mode MODE"
+        prefix_opt = planners.index("--mode")
+        planners.pop(prefix_opt)
+        mode = planners.pop(prefix_opt).lower()
+    except ValueError:
+        mode = "oneshot"  # default mode is oneshot
 
-    errors = report(*planners, problem_prefix=prefix)
+    if mode == "oneshot":
+        errors = report_oneshot(*planners, problem_prefix=prefix)
+    elif mode in ["val", "plan-validation", "validation"]:
+        errors = report_validation(*planners, problem_prefix=prefix)
+    else:
+        print(f"Unrecognized operation mode {mode}")
+        sys.exit(1)
+
     if len(errors) > 0:
         sys.exit(1)
 

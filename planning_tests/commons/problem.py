@@ -1,7 +1,6 @@
 from fractions import Fraction
 from typing import Optional, Union, List
 
-import unified_planning
 import unified_planning.model
 import unified_planning.plans
 from unified_planning.plans import Plan
@@ -36,7 +35,7 @@ class TestCase:
         self._solvable = solvable
         self._optimum = optimum
         self._valid_plans = valid_plans if valid_plans is not None else []
-        self._invalid_plans = invalid_plans if valid_plans is not None else []
+        self._invalid_plans = invalid_plans if invalid_plans is not None else []
 
     @property
     def problem(self) -> unified_planning.model.Problem:
