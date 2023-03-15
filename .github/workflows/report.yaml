@@ -34,4 +34,4 @@ jobs:
         run: python3 report.py --mode plan-validation
 
       - name: Report
-        run: 'python3 report.py --mode oneshot --prefix up:'
+        run: 'python3 report.py aries tamer --mode oneshot --prefix up:'
