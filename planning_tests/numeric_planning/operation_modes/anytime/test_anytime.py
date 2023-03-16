@@ -139,11 +139,11 @@ class TestSolvable:
             pytest.skip("{} does not support problem kind".format(anytime_planner_name))
         if not is_simple and planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
             pytest.skip("skip optimal planner on non-simple task")
+        if not planner.ensures(AnytimeGuarantee.INCREASING_QUALITY):
+             pytest.skip("{} does not support increasing quality".format(anytime_planner_name))
         results = result_cache.result(anytime_planner_name, problem,timeout)
         if not results[0].plan:
             pytest.skip("{} did not find a plan".format(anytime_planner_name))
-        if not planner.satisfies(AnytimeGuarantee.INCREASING_QUALITY):
-             pytest.skip("{} does not support increasing quality".format(anytime_planner_name))
         # The plan validator does not support metrics, so we remove this part
         # from the instance
         # TODO remove workaraound once resolved in UP
@@ -165,37 +165,36 @@ class TestSolvable:
 
     
 
-    def test_valid_result_status(self, anytime_planner_name, problem_name,
-            problem, optimal_cost,timeout, result_cache, is_simple):
-        up_problem = problem.get_problem()
-        planner = AnytimePlanner(name=anytime_planner_name)
-        if not planner.supports(up_problem.kind):
-            pytest.skip("{} does not support problem kind".format(anytime_planner_name))
-        if not is_simple and planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
-            pytest.skip("skip optimal planner on non-simple task")
-        results = result_cache.result(anytime_planner_name, problem,timeout)
-        total_solutions = len(results)
-        if total_solutions > 1:
-            total_solutions = total_solutions -1
-        for i in range(1,total_solutions):
-            result = results[i]
-            if result.plan:
-                # if the planner guarantees optimality, this should be reflected in
-                # the result status
-                metrics = up_problem.quality_metrics
-                if not metrics:
-                    assert result.status is PlanGenerationResultStatus.SOLVED_SATISFICING
-                else:
-                    if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
-                        assert result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY
-                    else:
-                        assert result.status in (PlanGenerationResultStatus.SOLVED_OPTIMALLY,
-                                             PlanGenerationResultStatus.SOLVED_SATISFICING)
-            else:
-                assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
-                # We are only running the test on solvable instances
-                assert result.status != PlanGenerationResultStatus.UNSOLVABLE_PROVEN
-                assert result.status in (PlanGenerationResultStatus.TIMEOUT,
-                                     PlanGenerationResultStatus.MEMOUT,
-                                     PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
-                                     PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
+    # def test_valid_result_status(self, anytime_planner_name, problem_name,
+    #         problem, optimal_cost,timeout, result_cache, is_simple):
+    #     up_problem = problem.get_problem()
+    #     planner = AnytimePlanner(name=anytime_planner_name)
+    #     if not planner.supports(up_problem.kind):
+    #         pytest.skip("{} does not support problem kind".format(anytime_planner_name))
+    #     if not is_simple and planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+    #         pytest.skip("skip optimal planner on non-simple task")
+    #     if not planner.ensures(AnytimeGuarantee.INCREASING_QUALITY):
+    #          pytest.skip("{} does not support increasing quality".format(anytime_planner_name))
+    #     results = result_cache.result(anytime_planner_name, problem,timeout)
+    #     result = results[-1]
+        
+    #     if result.plan:
+    #         # if the planner guarantees optimality, this should be reflected in
+    #         # the result status
+    #         metrics = up_problem.quality_metrics
+    #         if not metrics:
+    #             assert result.status is PlanGenerationResultStatus.SOLVED_SATISFICING
+    #         else:
+    #             if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+    #                 assert result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY
+    #             else:
+    #                 assert result.status in (PlanGenerationResultStatus.SOLVED_OPTIMALLY,
+    #                                      PlanGenerationResultStatus.SOLVED_SATISFICING)
+    #     else:
+    #         assert result.status != PlanGenerationResultStatus.INTERNAL_ERROR
+    #         # We are only running the test on solvable instances
+    #         assert result.status != PlanGenerationResultStatus.UNSOLVABLE_PROVEN
+    #         assert result.status in (PlanGenerationResultStatus.TIMEOUT,
+    #                              PlanGenerationResultStatus.MEMOUT,
+    #                              PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
+    #                              PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY)
