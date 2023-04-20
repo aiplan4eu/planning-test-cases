@@ -2,7 +2,6 @@ import os
 import sys
 import time
 from typing import Tuple
-
 from unified_planning.engines import PlanGenerationResultStatus, ValidationResultStatus, PlanGenerationResult, \
     ValidationResult
 from unified_planning.plans import Plan
