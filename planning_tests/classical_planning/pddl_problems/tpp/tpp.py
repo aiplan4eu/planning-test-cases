@@ -10,7 +10,7 @@ class tpp_pfile1(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_locatable = tm.UserType("locatable")
@@ -99,7 +99,7 @@ class tpp_pfile2(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_locatable = tm.UserType("locatable")
@@ -195,7 +195,7 @@ class tpp_pfile3(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_locatable = tm.UserType("locatable")
@@ -297,7 +297,7 @@ class tpp_pfile6(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_locatable = tm.UserType("locatable")

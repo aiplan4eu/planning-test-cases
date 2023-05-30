@@ -1,18 +1,12 @@
 # TODO test somewhere that presumably optimal planners declare themeselves such
 import pytest
 
-from planning_tests.classical_planning import (
-        UPBasic,
-        UPConditionalEffects,
-        UPCostMetricWithConstantCosts,
-        UPLengthMetric,
-        depots_pfile1,
-        depots_pfile2,
-        depots_pfile3,
-        tpp_pfile1,
-        tpp_pfile2,
-        tpp_pfile3,
-        tpp_pfile6
+from planning_tests.temporal_planning import (
+    depots_pfile1,
+    depots_pfile2,
+    depots_pfile3,
+    depots_pfile10,
+    depots_pfile11
         )
 from unified_planning.engines import (OptimalityGuarantee,
         PlanGenerationResultStatus, ValidationResultStatus)
@@ -43,45 +37,29 @@ def result_cache():
     return ResultCache()
 
 
-basic = UPBasic(expected_version=1)
-conditional_effects = UPConditionalEffects(expected_version=1)
-cost_metric = UPCostMetricWithConstantCosts(expected_version=1)
-length_metric = UPLengthMetric(expected_version=1)
-conditional_effects = UPConditionalEffects(expected_version=1)
 depots_pfile1 = depots_pfile1(expected_version=1)
 depots_pfile2 = depots_pfile2(expected_version=1)
 depots_pfile3 = depots_pfile3(expected_version=1)
-tpp_pfile1 = tpp_pfile1(expected_version=1)
-tpp_pfile2 = tpp_pfile2(expected_version=1)
-tpp_pfile3 = tpp_pfile3(expected_version=1)
-tpp_pfile6 = tpp_pfile6(expected_version=1)
+depots_pfile10 = depots_pfile10(expected_version=1)
+depots_pfile11 = depots_pfile11(expected_version=1)
+
 
 @pytest.mark.all
 @pytest.mark.solvable
+@pytest.mark.temporal
 @pytest.mark.parametrize("problem_name, problem, optimal_cost",
     [
-        pytest.param('prob_basic', basic, 1, marks=pytest.mark.simple),
-        pytest.param('prob_cond_effects', conditional_effects, 2, marks=pytest.mark.simple),
-        pytest.param('prob_cost_metric', cost_metric, 4,
-            marks=pytest.mark.simple),
-        pytest.param('prob_length_metric', length_metric, 1,
-            marks=pytest.mark.simple),
-        pytest.param('prob_cond_effects', conditional_effects, 2,
-            marks=pytest.mark.simple),
         pytest.param("depots_pfile1", depots_pfile1, 10,
             marks=[pytest.mark.simple, pytest.mark.depots]),
         pytest.param("depots_pfile2", depots_pfile2, 15,
             marks=[pytest.mark.simple, pytest.mark.depots]),
         pytest.param("depots_pfile3", depots_pfile3, 27,
+            marks=[pytest.mark.simple, pytest.mark.depots]),
+        pytest.param("depots_pfile10", depots_pfile10, None,
             marks=[pytest.mark.medium, pytest.mark.depots]),
-        pytest.param("tpp_pfile1", tpp_pfile1, 5,
-            marks=[pytest.mark.simple, pytest.mark.TPP]),
-        pytest.param("tpp_pfile2", tpp_pfile2, 8,
-            marks=[pytest.mark.simple, pytest.mark.TPP]),
-        pytest.param("tpp_pfile3", tpp_pfile3, 11,
-            marks=[pytest.mark.simple, pytest.mark.TPP]),
-        pytest.param("tpp_pfile6", tpp_pfile6, 25,
-            marks=[pytest.mark.medium, pytest.mark.TPP]),
+        pytest.param("depots_pfile11", depots_pfile11, None,
+            marks=[pytest.mark.medium, pytest.mark.depots]),
+
     ])
 class TestSolvable:
 

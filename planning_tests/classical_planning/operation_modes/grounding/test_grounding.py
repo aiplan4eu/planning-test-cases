@@ -15,14 +15,14 @@ from planning_tests.classical_planning import (
         )
 from unified_planning.engines import ValidationResultStatus
 from unified_planning.shortcuts import (
-        get_env,
+        get_environment,
         CompilationKind,
         Compiler,
         OneshotPlanner,
         PlanValidator
         )
 
-get_env().credits_stream = None  # silence credits
+get_environment().credits_stream = None  # silence credits
 
 
 @pytest.fixture()
