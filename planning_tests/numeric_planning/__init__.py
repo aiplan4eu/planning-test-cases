@@ -38,3 +38,5 @@ from .pddl_problems.sailing.sailing import (
         sailing_1_3_1229,
         sailing_3_3_1229,
         sailing_4_10_1229)
+from .pddl_problems.rovers.rovers_plans import (
+	rovers_pfile3_bad_plan1)

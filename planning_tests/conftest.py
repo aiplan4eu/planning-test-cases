@@ -37,3 +37,10 @@ def pytest_generate_tests(metafunc):
         tags = [t for t in tags
                 if get_environment().factory.engine(t).is_anytime_planner()]
         metafunc.parametrize("anytime_planner_name", tags, scope='session')
+    if "repairer_planner_name" in metafunc.fixturenames:
+        tags = set(metafunc.config.option.planner_name)
+        if not tags or 'all' in tags:
+            tags = [n for n in get_environment().factory.engines]
+        tags = [t for t in tags
+                if get_environment().factory.engine(t).is_plan_repairer()]
+        metafunc.parametrize("repairer_planner_name", tags, scope='session')
