@@ -15,11 +15,11 @@ from planning_tests.commons.problem import TestCase
 
 def problems() -> list[TestCase]:
     """
-    Generates deterministically a set of JobShop problems with known solutions.
+    Generates deterministically a set of JobShop problems with valid/invalid solutions and optimal.
     """
     pbs: list[TestCase] = []
 
-    problems_dir = Path(__file__).parent.resolve() / "problems"
+    problems_dir = Path(__file__).parent.resolve() / "valid_problems"
     for file in problems_dir.iterdir():
         if file.is_file() and file.suffix == ".jsp":
             problem, plan, optimal = _parse(file)
