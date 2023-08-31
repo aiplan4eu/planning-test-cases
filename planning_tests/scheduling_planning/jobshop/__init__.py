@@ -17,22 +17,43 @@ def problems() -> list[TestCase]:
     """
     Generates deterministically a set of JobShop problems with valid/invalid solutions and optimal.
     """
-    pbs: list[TestCase] = []
+    base_dir = Path(__file__).parent.resolve()
+    valid_problems = _problems_from_folder(base_dir / "valid_problems")
+    invalid_problems = _problems_from_folder(base_dir / "invalid_problems")
 
-    problems_dir = Path(__file__).parent.resolve() / "valid_problems"
-    for file in problems_dir.iterdir():
-        if file.is_file() and file.suffix == ".jsp":
-            problem, plan, optimal = _parse(file)
-            test_case = TestCase(
-                problem,
-                solvable=True,
-                optimum=optimal,
-                valid_plans=[plan],
-                invalid_plans=[],  # TODO - Add invalid plans
-            )
-            pbs.append(test_case)
+    pbs_map = {}
+    for problem, plan, optimal in valid_problems:
+        if problem not in pbs_map:
+            pbs_map[problem] = {
+                "optimum": optimal,
+                "valid_plans": [],
+                "invalid_plans": [],
+            }
+        pbs_map[problem]["valid_plans"].append(plan)
 
-    return pbs
+    for problem, plan, optimal in invalid_problems:
+        if problem not in pbs_map:
+            pbs_map[problem] = {
+                "optimum": optimal,
+                "valid_plans": [],
+                "invalid_plans": [],
+            }
+        pbs_map[problem]["invalid_plans"].append(plan)
+
+    return [
+        TestCase(
+            problem,
+            solvable=True,
+            **data,
+        )
+        for problem, data in pbs_map.items()
+    ]
+
+
+def _problems_from_folder(
+    folder: Path,
+) -> list[tuple[SchedulingProblem, SchedulingPlan, int]]:
+    return [_parse(file) for file in folder.iterdir()]
 
 
 # ============================================================================ #
@@ -108,7 +129,8 @@ def _parse(filepath: Path) -> tuple[SchedulingProblem, SchedulingPlan, int]:
         starts.append(_parse_line(lines.pop(0))[0:num_machines])
 
     # Create the problem and the plan data
-    problem = SchedulingProblem(f"sched:jobshop:{filepath.name}")
+    problem_id = filepath.name.split("_")[2].replace(".jsp", "")
+    problem = SchedulingProblem(f"sched:jobshop:problem_{problem_id}")
     machine_objects = [
         problem.add_resource(f"M{i}", capacity=1) for i in range(1, num_machines + 1)
     ]
