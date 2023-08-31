@@ -1,8 +1,43 @@
 from pathlib import Path
 
-from unified_planning.shortcuts import LE
 from unified_planning.model.metrics import MinimizeMakespan
 from unified_planning.model.scheduling import SchedulingProblem
+from unified_planning.plans import Schedule as SchedulingPlan
+from unified_planning.shortcuts import LE
+
+from planning_tests.commons.problem import TestCase
+
+
+# ============================================================================ #
+#                                   Problems                                   #
+# ============================================================================ #
+
+
+def problems() -> list[TestCase]:
+    """
+    Generates deterministically a set of JobShop problems with known solutions.
+    """
+    pbs: list[TestCase] = []
+
+    problems_dir = Path(__file__).parent.resolve() / "problems"
+    for file in problems_dir.iterdir():
+        if file.is_file() and file.suffix == ".jsp":
+            problem, plan, optimal = _parse(file)
+            test_case = TestCase(
+                problem,
+                solvable=True,
+                optimum=optimal,
+                valid_plans=[plan],
+                invalid_plans=[],  # TODO - Add invalid plans
+            )
+            pbs.append(test_case)
+
+    return pbs
+
+
+# ============================================================================ #
+#                               JSP Files Parsing                              #
+# ============================================================================ #
 
 
 def _parse_line(line: str) -> list[int]:

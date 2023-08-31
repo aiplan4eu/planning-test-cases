@@ -10,6 +10,7 @@ from unified_planning.shortcuts import *
 from unified_planning.environment import get_environment
 
 import planning_tests.refinement_planning.hddl
+import planning_tests.scheduling_planning
 from planning_tests.commons.problem import TestCase
 from planning_tests.commons.results import *
 
@@ -27,7 +28,11 @@ get_environment().credits_stream = None  # silence credits
 
 def all_test_cases():
     """Returns all test cases of this repository"""
-    return up_tests() + planning_tests.refinement_planning.problems()
+    return (
+        up_tests()
+        + planning_tests.refinement_planning.problems()
+        + planning_tests.scheduling_planning.problems()
+    )
 
 
 def engines() -> List[Tuple[str, Engine]]:
