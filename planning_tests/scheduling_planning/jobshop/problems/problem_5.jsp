@@ -1,5 +1,5 @@
-nb_jobs nb_machines
-4 4 0 0
+nb_jobs nb_machines optimal
+4 4 43 0
 Times
 8 5 10 10
 5 4 8 9
@@ -10,3 +10,8 @@ Machines
 3 4 1 2
 2 1 3 4
 3 2 1 4
+Starts
+5 14 23 33 
+0 5 10 18 
+0 5 19 27 
+5 14 18 23 
