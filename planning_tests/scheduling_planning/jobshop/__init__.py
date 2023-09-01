@@ -4,6 +4,7 @@ This module generates small Job Shop scheduling problems (4 jobs and 4 machines)
 Each problem has valid/invalid plans and the optimal value based on the makespan metric.
 """
 from pathlib import Path
+from typing import List
 
 from unified_planning.model.metrics import MinimizeMakespan
 from unified_planning.model.scheduling import SchedulingProblem
@@ -18,7 +19,7 @@ from planning_tests.commons.problem import TestCase
 # ============================================================================ #
 
 
-def problems() -> list[TestCase]:
+def problems() -> List[TestCase]:
     """
     Generates deterministically a set of JobShop problems with valid/invalid solutions and optimal.
     """
@@ -31,7 +32,7 @@ def problems() -> list[TestCase]:
 # ============================================================================ #
 
 
-def _parse_line(line: str) -> list[int]:
+def _parse_line(line: str) -> List[int]:
     """
     Parse a line of integers.
 
