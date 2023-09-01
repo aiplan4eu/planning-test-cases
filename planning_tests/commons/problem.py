@@ -1,7 +1,10 @@
 from fractions import Fraction
-from typing import Optional, Union
+from typing import Optional, Union, List
 
-import unified_planning
+import unified_planning.model
+import unified_planning.plans
+from unified_planning.plans import Plan
+
 
 class TestCaseProblem(object):
     def __init__(self, expected_version):
@@ -20,10 +23,19 @@ class TestCaseProblem(object):
     
 
 class TestCase:
-    def __init__(self, problem: unified_planning.model.Problem, solvable: bool, optimum: Optional[Union[int, Fraction]] = None):
+    def __init__(self,
+                 problem: unified_planning.model.Problem,
+                 solvable: bool,
+                 optimum: Optional[Union[int, Fraction]] = None,
+                 valid_plans: Optional[List[Plan]] = None,
+                 invalid_plans: Optional[List[Plan]] = None,
+                 ):
+
         self._problem = problem
         self._solvable = solvable
         self._optimum = optimum
+        self._valid_plans = valid_plans if valid_plans is not None else []
+        self._invalid_plans = invalid_plans if invalid_plans is not None else []
 
     @property
     def problem(self) -> unified_planning.model.Problem:
@@ -41,6 +53,13 @@ class TestCase:
     def optimum(self) -> Optional[Union[int, Fraction]]:
         return self._optimum
 
+    @property
+    def valid_plans(self) -> List[Plan]:
+        return self._valid_plans
+
+    @property
+    def invalid_plans(self) -> List[Plan]:
+        return self._invalid_plans
 
 class PDDLTestCase(TestCase):
     """A specialization of `TestCase` for file-based PDDL problems.
