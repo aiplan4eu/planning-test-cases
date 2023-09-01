@@ -1,3 +1,8 @@
+"""
+This module generates small Job Shop scheduling problems (4 jobs and 4 machines).
+
+Each problem has valid/invalid plans and the optimal value based on the makespan metric.
+"""
 from pathlib import Path
 
 from unified_planning.model.metrics import MinimizeMakespan
