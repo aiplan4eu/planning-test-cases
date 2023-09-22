@@ -10,7 +10,7 @@ class depots_pfile1(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_object = tm.UserType("object")
@@ -161,7 +161,7 @@ class depots_pfile2(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_object = tm.UserType("object")
@@ -324,7 +324,7 @@ class depots_pfile3(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        env = up.environment.get_env()
+        env = up.environment.get_environment()
         emgr = env.expression_manager
         tm = env.type_manager
         type_object = tm.UserType("object")
