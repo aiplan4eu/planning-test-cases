@@ -30,5 +30,8 @@ jobs:
       - name: Install Aries (dev-build)
         run: python3 -m pip install https://github.com/plaans/aries/releases/download/latest/up_aries.tar.gz
 
+      - name: Report validation
+        run: python3 report.py --mode plan-validation
+
       - name: Report
-        run: 'python3 report.py --prefix up: ; true'
+        run: 'python3 report.py aries tamer --mode oneshot --prefix up:'
