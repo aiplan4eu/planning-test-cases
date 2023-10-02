@@ -225,7 +225,7 @@ def run_grounding(grounders: List[str], problems: List[TestCase]):
         print(test_case.name.ljust(40), end='\n')
         for grounder_id in grounders:
             grounder = Compiler(name=grounder_id)
-            if grounder.supports(pb.kind):
+            if grounder.supports(pb.kind) and grounder.supports_compilation(CompilationKind.GROUNDING):
                 try:
                     print("|  ", grounder_id.ljust(40), end='')
                     start = time.time()
@@ -307,7 +307,7 @@ def report_grounding(*engines: str, problem_prefix: str = ""):
     test_cases = [p for p in test_cases if p.name.startswith(problem_prefix)]
     if len(engines) == 0:
         engines = compilers()
-
+    
     errors = run_grounding(engines, test_cases)
     if len(errors) > 0:
         print("Errors:\n ", "\n  ".join(map(str, errors)))
