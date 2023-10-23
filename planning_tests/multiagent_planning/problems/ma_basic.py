@@ -9,18 +9,18 @@ class UPMABasic(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        problem = MultiAgentProblem("simple_MA")
+        problem = MultiAgentProblem("simple_ma")
         robot_a = Agent("robot_a", problem)
         scale_a = Agent("scale_a", problem)
-        Location = UserType("Location")
+        location = UserType("location")
         door = UserType("door")
-        home = UserType("home", Location)
-        office = UserType("office", Location)
+        home = UserType("home", location)
+        office = UserType("office", location)
         open20 = UserType("open20", door)
         close20 = UserType("close20", door)
 
         open = Fluent("open", door=door)
-        pos = Fluent("pos", loc=Location)
+        pos = Fluent("pos", loc=location)
 
         robot_a.add_fluent(pos, default_initial_value=False)
         scale_a.add_fluent(open, default_initial_value=False)

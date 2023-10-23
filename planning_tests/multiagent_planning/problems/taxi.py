@@ -9,7 +9,7 @@ class UPTaxi(TestCaseProblem):
         TestCaseProblem.__init__(self, expected_version)
 
     def get_problem(self):
-        problem = MultiAgentProblem("ma-taxi")
+        problem = MultiAgentProblem("ma_taxi")
         location = UserType("location")
         taxi = UserType("taxi")
         driver1 = Agent("driver1", problem)
