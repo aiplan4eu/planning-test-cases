@@ -35,3 +35,6 @@ jobs:
 
       - name: Report
         run: 'python3 report.py aries tamer --mode oneshot --prefix up:'
+
+      - name: Install FMAP
+        run: python3 -m pip install up-fmap/
