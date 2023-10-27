@@ -196,7 +196,7 @@ def run_planning(planners: List[str], problems: List[TestCase], timeout=1) -> Li
                 solutions = []
                 try:
                     if(MODE == "oneshot"):
-                        result = planner.solve(pb)
+                        result = planner.solve(pb, timeout=timeout)
                     elif(MODE == "anytime"):
                         for p in planner.get_solutions(pb, timeout=timeout):
                             if p.plan is not None:
