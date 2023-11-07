@@ -34,7 +34,11 @@ get_environment().credits_stream = None  # silence credits
 
 def all_test_cases():
     """Returns all test cases of this repository"""
-    return up_tests() + classical_test_cases() + numeric_test_cases() + temporal_test_cases() + planning_tests.refinement_planning.problems()
+    return classical_test_cases() + numeric_test_cases() + temporal_test_cases() + planning_tests.refinement_planning.problems()
+
+
+def all_bad_plans():
+    return classical_bad_plans() + numeric_bad_plans() + temporal_bad_plans()
 
 
 def engines() -> List[Tuple[str, Engine]]:
@@ -48,7 +52,9 @@ def get_planners():
     if(MODE == "oneshot"):
         return [t for t, e in engines() if e.is_oneshot_planner()]
     elif(MODE == "anytime"):
-        return [t for t, e in engines() if e.is_anytime_planner()]
+        return [t for t, e in engines() if e.is_anytime_planner()]    
+    elif(MODE == "plan-repair"):
+        return [t for t, e in engines() if e.is_plan_repairer()]
 
 
 def validators():
@@ -100,10 +106,34 @@ def temporal_test_cases():
     return cases
 
 
+def numeric_bad_plans():
+    plans = []
+    for name, plan in planning_tests.numeric_planning.plans().items():
+        plan.name = f"numeric:{name}"
+        plans.append(plan)
+    return plans
+
+
+def classical_bad_plans():
+    plans = []
+    for name, plan in planning_tests.classical_planning.plans().items():
+        plan.name = f"classical:{name}"
+        plans.append(plan)
+    return plans
+
+
+def temporal_bad_plans():
+    plans = []
+    for name, plan in planning_tests.temporal_planning.plans().items():
+        plan.name = f"temporal:{name}"
+        plans.append(plan)
+    return plans
+
+
 def validate_plan(plan: Plan, problem: Problem) -> ResultSet:
     """Validates a plan produced by a planner."""
     try:
-        with PlanValidator(problem_kind=problem.kind) as validator:
+        with PlanValidator(problem_kind=problem.kind, plan_kind=plan.kind) as validator:
             if not validator.supports_plan(plan.kind):
                 return Warn(f"Validator {validator.name} does not support plan")
             check = validator.validate(problem, plan)
@@ -129,7 +159,7 @@ def check_result(test: TestCase, result: PlanGenerationResult, planner, solution
     output = Void()
     output += verify(result.status != PlanGenerationResultStatus.INTERNAL_ERROR, "forbidden internal error")
 
-    if(MODE == "oneshot"):
+    if(MODE == "oneshot" or MODE == "plan-repair"):
         if result.plan:
             if not test.solvable:
                 output += Err("Unsolvable problem")
@@ -194,6 +224,7 @@ def run_planning(planners: List[str], problems: List[TestCase], timeout=1) -> Li
                 print("|  ", planner_id.ljust(40), end='')
                 start = time.time()
                 solutions = []
+
                 try:
                     if(MODE == "oneshot"):
                         result = planner.solve(pb, timeout=timeout)
@@ -243,6 +274,44 @@ def run_grounding(grounders: List[str], problems: List[TestCase]):
                 except Exception as e:
                     print(f"{bcolors.ERR}CRASH{bcolors.ENDC}", e)
                     errors.append((grounder_id, test_case.name))
+    return errors
+
+
+def run_plan_repairing(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[str, str]]:
+    errors = []
+    for pair in problems:
+        print()
+        print(pair[0].name.ljust(40), end='\n')
+        test_case_plan = pair[0]
+        test_case_problem = pair[1]
+        pb = test_case_problem.problem
+
+        print()
+
+        for planner_id in planners:
+            solutions = []
+            planner = PlanRepairer(name=planner_id)
+
+            if planner.supports(pb.kind):
+                print("|  ", planner_id.ljust(40), end='')
+                start = time.time()
+                solutions = []
+
+                try:
+                    #print(test_case_plan)
+                    print()
+                    result = planner.repair(pb, test_case_plan)
+                    end = time.time()
+                    status = str(result.status.name).ljust(25)
+                    outcome = check_result(test_case_problem, result, planner, solutions)
+                    if not outcome.ok():
+                        errors.append((planner_id, test_case_problem.name))
+                    runtime = "{:.3f}s".format(end - start).ljust(10)
+                    print(status, "    ", runtime, outcome)
+                        
+                except Exception as e:
+                    print(f"{bcolors.ERR}CRASH{bcolors.ENDC}", e)
+                    errors.append((planner_id, test_case_problem.name))
     return errors
 
 
@@ -314,6 +383,32 @@ def report_grounding(*engines: str, problem_prefix: str = ""):
     return errors
 
 
+def report_plan_repairing(*planners: str, problem_prefix: str = "", timeout = 1):
+    problems = all_test_cases()
+    plans = all_bad_plans()
+    test_cases = []
+
+    for i in range(len(plans)):
+        corresponding = 0
+        max = 0
+        for j in range(len(problems)):
+            prefix = os.path.commonprefix([plans[i].name, problems[j].name])
+            if(len(prefix) > max):
+                corresponding = j
+                max = len(prefix)
+        pair = (plans[i], problems[corresponding])
+        test_cases.append(pair)
+
+    if len(planners) == 0:
+        planners = get_planners()
+ 
+    errors = run_plan_repairing(planners, test_cases, timeout)
+    if len(errors) > 0:
+        print("Errors:\n ", "\n  ".join(map(str, errors)))
+    return errors
+
+    
+
 if __name__ == "__main__":
     print(USAGE)
     planners = sys.argv[1:]
@@ -345,6 +440,9 @@ if __name__ == "__main__":
     elif mode == "anytime":
         MODE = "anytime"
         errors = report_planning(*planners, problem_prefix=prefix, timeout=int(timeout))
+    elif mode in "plan-repair":
+        MODE = "plan-repair"
+        errors = report_plan_repairing(*planners, problem_prefix=prefix)
     elif mode == "grounding":
         errors = report_grounding(*planners, problem_prefix=prefix)
     elif mode in ["val", "plan-validation", "validation"]:

@@ -39,6 +39,22 @@ from .pddl_problems.sailing.sailing import (
         sailing_3_3_1229,
         sailing_4_10_1229)
 
+from .pddl_problems.rovers.rovers_plans import (
+        rovers_pfile2_bad_plan1,
+        rovers_pfile3_bad_plan1,
+        rovers_pfile4_bad_plan1,
+        rovers_pfile5_bad_plan1)
+
+from .pddl_problems.depots.depots_plans import (
+        depots_pfile1_bad_plan1,
+        depots_pfile2_bad_plan1,
+        depots_pfile3_bad_plan1,
+        depots_pfile10_bad_plan1,
+        depots_pfile11_bad_plan1)
+
+from .pddl_problems.fn_counters.fn_counters_plan import (
+        fn_counters_2_bad_plan1, fn_counters_4_bad_plan1, fn_counters_8_bad_plan1)
+
 def problems():
     problems = {}
     problems['depots_pfile1'] = depots_pfile1(expected_version=1).get_problem()
@@ -73,5 +89,43 @@ def problems():
     problems['sailing_1_3_1229'] = sailing_1_3_1229(expected_version=1).get_problem()
     problems['sailing_3_3_1229'] = sailing_3_3_1229(expected_version=1).get_problem()
     problems['sailing_4_10_1229'] = sailing_4_10_1229(expected_version=1).get_problem()
+    problems['UPBasic'] = UPBasic(expected_version=1).get_problem()
+    problems['UPConditionalEffects'] = UPConditionalEffects(expected_version=1).get_problem()
+    problems['UPDisjunctiveConditions'] = UPDisjunctiveConditions(expected_version=1).get_problem()
+    problems['UPExistentialConditions'] = UPExistentialConditions(expected_version=1).get_problem()
+    problems['UPUniversalConditions'] = UPUniversalConditions(expected_version=1).get_problem()
+    problems['UPComplexUniversalExistentialConditions'] = UPComplexUniversalExistentialConditions(expected_version=1).get_problem()
+    problems['UPNonLinearDisjunctiveConditions'] = UPNonLinearDisjunctiveConditions(expected_version=1).get_problem()
+    problems['UPNonLinearExistentialConditions'] = UPNonLinearExistentialConditions(expected_version=1).get_problem()
+    problems['UPNonLinearUniversalConditions'] = UPNonLinearUniversalConditions(expected_version=1).get_problem()
+    problems['UPConstantIncreaseEffects'] = UPConstantIncreaseEffects(expected_version=1).get_problem()
+    problems['UPConstantDecreaseEffects'] = UPConstantDecreaseEffects(expected_version=1).get_problem()
+    problems['UPNonLinearIncreaseEffects'] = UPNonLinearIncreaseEffects(expected_version=1).get_problem()
+    problems['UPNonLinearAssignEffects'] = UPNonLinearAssignEffects(expected_version=1).get_problem()
+    problems['UPNonLinearConditionalEffects'] = UPNonLinearConditionalEffects(expected_version=1).get_problem()
+    problems['UPEqualityConditions'] = UPEqualityConditions(expected_version=1).get_problem()
+    problems['UPNegativeConditions'] = UPNegativeConditions(expected_version=1).get_problem()
+    problems['UPGreaterLowerConditions'] = UPGreaterLowerConditions(expected_version=1).get_problem()
+    problems['UPGreaterThanConditions'] = UPGreaterThanConditions(expected_version=1).get_problem()
+    problems['UPLowerThanConditions'] = UPLowerThanConditions(expected_version=1).get_problem()
+    problems['UPGreaterThanEqualityNonLinearConditions'] = UPGreaterThanEqualityNonLinearConditions(expected_version=1).get_problem()
+    problems['UPLowerEqualNegativeNonLinearConditions'] = UPLowerEqualNegativeNonLinearConditions(expected_version=1).get_problem()
+    
     return problems
 
+
+def plans():
+    plans = {}
+    plans['rovers_pfile2_bad_plan1'] = rovers_pfile2_bad_plan1(expected_version=1).get_plan()
+    plans['rovers_pfile3_bad_plan1'] = rovers_pfile3_bad_plan1(expected_version=1).get_plan()    
+    plans['rovers_pfile4_bad_plan1'] = rovers_pfile4_bad_plan1(expected_version=1).get_plan()
+    plans['rovers_pfile5_bad_plan1'] = rovers_pfile5_bad_plan1(expected_version=1).get_plan()
+    plans['fn_counters_2_bad_plan1'] = fn_counters_2_bad_plan1(expected_version=1).get_plan()
+    plans['fn_counters_4_bad_plan1'] = fn_counters_4_bad_plan1(expected_version=1).get_plan()
+    plans['fn_counters_8_bad_plan1'] = fn_counters_8_bad_plan1(expected_version=1).get_plan()
+    plans['depots_pfile1_bad_plan1'] = depots_pfile1_bad_plan1(expected_version=1).get_plan()
+    plans['depots_pfile2_bad_plan1'] = depots_pfile2_bad_plan1(expected_version=1).get_plan()
+    plans['depots_pfile3_bad_plan1'] = depots_pfile3_bad_plan1(expected_version=1).get_plan()
+    plans['depots_pfile10_bad_plan1'] = depots_pfile10_bad_plan1(expected_version=1).get_plan()
+    plans['depots_pfile11_bad_plan1'] = depots_pfile11_bad_plan1(expected_version=1).get_plan()
+    return plans
