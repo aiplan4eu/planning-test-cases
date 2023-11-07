@@ -12,6 +12,9 @@ from unified_planning.shortcuts import *
 from unified_planning.environment import get_environment
 
 import planning_tests.refinement_planning.hddl
+import planning_tests.numeric_planning
+import planning_tests.temporal_planning
+import planning_tests.classical_planning
 from planning_tests.commons.problem import TestCase
 from planning_tests.commons.results import *
 
@@ -24,12 +27,18 @@ Usage (default operation mode: oneshot):
 The test operation can be changed with `--mode plan-validation` or `--mode oneshot`. 
 """
 
+MODE = "oneshot"
+
 get_environment().credits_stream = None  # silence credits
 
 
 def all_test_cases():
     """Returns all test cases of this repository"""
-    return up_tests() + planning_tests.refinement_planning.problems()
+    return classical_test_cases() + numeric_test_cases() + temporal_test_cases() + planning_tests.refinement_planning.problems()
+
+
+def all_bad_plans():
+    return classical_bad_plans() + numeric_bad_plans() + temporal_bad_plans()
 
 
 def engines() -> List[Tuple[str, Engine]]:
@@ -38,9 +47,14 @@ def engines() -> List[Tuple[str, Engine]]:
     return [(t, get_environment().factory.engine(t)) for t in tags]
 
 
-def oneshot_planners():
+def get_planners():
     """All available oneshot planners."""
-    return [t for t, e in engines() if e.is_oneshot_planner()]
+    if(MODE == "oneshot"):
+        return [t for t, e in engines() if e.is_oneshot_planner()]
+    elif(MODE == "anytime"):
+        return [t for t, e in engines() if e.is_anytime_planner()]    
+    elif(MODE == "plan-repair"):
+        return [t for t, e in engines() if e.is_plan_repairer()]
 
 
 def validators():
@@ -48,10 +62,14 @@ def validators():
     return [t for t, e in engines() if e.is_plan_validator()]
 
 
+def compilers():
+    """All available compilers"""
+    return [t for t, e in engines() if e.is_compiler()]
+
+
 def up_tests():
     """All test cases defined in the `unified_planning.test` module. All are assumed to be solvable."""
     from unified_planning.test.examples import get_example_problems
-
     cases = []
     for name, problem in get_example_problems().items():
         pb = problem.problem.clone()
@@ -61,10 +79,61 @@ def up_tests():
     return cases
 
 
+def classical_test_cases():
+    cases = []
+    for name, problem in planning_tests.classical_planning.problems().items():
+        pb = problem.clone()
+        pb.name = f"classical:{name}"
+        cases.append(TestCase(pb, solvable=True, valid_plans=[]))
+    return cases
+
+
+def numeric_test_cases():
+    cases = []
+    for name, problem in planning_tests.numeric_planning.problems().items():
+        pb = problem.clone()
+        pb.name = f"numeric:{name}"
+        cases.append(TestCase(pb, solvable=True, valid_plans=[]))
+    return cases
+
+
+def temporal_test_cases():
+    cases = []
+    for name, problem in planning_tests.temporal_planning.problems().items():
+        pb = problem.clone()
+        pb.name = f"temporal:{name}"
+        cases.append(TestCase(pb, solvable=True, valid_plans=[]))
+    return cases
+
+
+def numeric_bad_plans():
+    plans = []
+    for name, plan in planning_tests.numeric_planning.plans().items():
+        plan.name = f"numeric:{name}"
+        plans.append(plan)
+    return plans
+
+
+def classical_bad_plans():
+    plans = []
+    for name, plan in planning_tests.classical_planning.plans().items():
+        plan.name = f"classical:{name}"
+        plans.append(plan)
+    return plans
+
+
+def temporal_bad_plans():
+    plans = []
+    for name, plan in planning_tests.temporal_planning.plans().items():
+        plan.name = f"temporal:{name}"
+        plans.append(plan)
+    return plans
+
+
 def validate_plan(plan: Plan, problem: Problem) -> ResultSet:
     """Validates a plan produced by a planner."""
     try:
-        with PlanValidator(problem_kind=problem.kind) as validator:
+        with PlanValidator(problem_kind=problem.kind, plan_kind=plan.kind) as validator:
             if not validator.supports_plan(plan.kind):
                 return Warn(f"Validator {validator.name} does not support plan")
             check = validator.validate(problem, plan)
@@ -76,7 +145,7 @@ def validate_plan(plan: Plan, problem: Problem) -> ResultSet:
         return Warn("No validator for problem")
     except Exception as e:
         return Warn(f"Validator crash ({e})")
-
+    
 
 def verify(cond: bool, error_tag: str, ok_tag: str = "") -> ResultSet:
     """Returns an Error if the condition passed in parameter does not hold."""
@@ -86,44 +155,58 @@ def verify(cond: bool, error_tag: str, ok_tag: str = "") -> ResultSet:
         return Err(error_tag)
 
 
-def check_result(test: TestCase, result: PlanGenerationResult, planner) -> ResultSet:
+def check_result(test: TestCase, result: PlanGenerationResult, planner, solutions = []) -> ResultSet:
     output = Void()
     output += verify(result.status != PlanGenerationResultStatus.INTERNAL_ERROR, "forbidden internal error")
 
-    if result.plan:
-        if not test.solvable:
-            output += Err("Unsolvable problem")
-        # if the planner guarantees optimality, this should be reflected in
-        # the result status
-        metrics = test.problem.quality_metrics
-        if not metrics:
-            output += verify(result.status is PlanGenerationResultStatus.SOLVED_SATISFICING, "expected SAT ")
-        else:
-            if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
-                output += verify(result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY, "expected OPT")
+    if(MODE == "oneshot" or MODE == "plan-repair"):
+        if result.plan:
+            if not test.solvable:
+                output += Err("Unsolvable problem")
+            # if the planner guarantees optimality, this should be reflected in
+            # the result status
+            metrics = test.problem.quality_metrics
+            if not metrics:
+                output += verify(result.status is PlanGenerationResultStatus.SOLVED_SATISFICING, "expected SAT ")
             else:
-                output += verify(result.status in (PlanGenerationResultStatus.SOLVED_OPTIMALLY,
-                                         PlanGenerationResultStatus.SOLVED_SATISFICING), "expected SAT/OPT")
+                if planner.satisfies(OptimalityGuarantee.SOLVED_OPTIMALLY):
+                    output += verify(result.status is PlanGenerationResultStatus.SOLVED_OPTIMALLY, "expected OPT")
+                else:
+                    output += verify(result.status in (PlanGenerationResultStatus.SOLVED_OPTIMALLY,
+                                                PlanGenerationResultStatus.SOLVED_SATISFICING), "expected SAT/OPT")
+            output += validate_plan(result.plan, test.problem)
+        elif test.solvable:
+            output += verify(result.status != PlanGenerationResultStatus.UNSOLVABLE_PROVEN, "UNSOLVABLE on solvable problem")
+            # We are only running the test on solvable instances
+            output += verify(result.status in (PlanGenerationResultStatus.TIMEOUT,
+                                                PlanGenerationResultStatus.MEMOUT,
+                                                PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
+                                                PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY), "invalid status")
+            output += Warn(f"Unsolved ({result.status.name})")
+        else:
+            output += verify(result.status in (PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
+                                                PlanGenerationResultStatus.TIMEOUT,
+                                                PlanGenerationResultStatus.MEMOUT,
+                                                PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
+                                                PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY), "invalid status")
+    elif(MODE == "anytime" and result.status is not PlanGenerationResultStatus.TIMEOUT):
         output += validate_plan(result.plan, test.problem)
-    elif test.solvable:
-        output += verify(result.status != PlanGenerationResultStatus.UNSOLVABLE_PROVEN, "UNSOLVABLE on solvable problem")
-        # We are only running the test on solvable instances
-        output += verify(result.status in (PlanGenerationResultStatus.TIMEOUT,
-                                           PlanGenerationResultStatus.MEMOUT,
-                                           PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
-                                           PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY), "invalid status")
-        output += Warn(f"Unsolved ({result.status.name})")
-    else:
-        output += verify(result.status in (PlanGenerationResultStatus.UNSOLVABLE_PROVEN,
-                                           PlanGenerationResultStatus.TIMEOUT,
-                                           PlanGenerationResultStatus.MEMOUT,
-                                           PlanGenerationResultStatus.UNSUPPORTED_PROBLEM,
-                                           PlanGenerationResultStatus.UNSOLVABLE_INCOMPLETELY), "invalid status")
-
+        output += verify(check_anytime_guarantee(solutions), "Anytime guarantee not satisfied")
     return output
 
 
-def run_oneshot(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[str, str]]:
+def check_anytime_guarantee(results):
+    total_solutions = len(results)
+    if total_solutions > 1:
+        total_solutions = total_solutions -1
+    for i in range(1,total_solutions):
+        result = results[i]
+        if len(result.plan.actions) > len(results[i-1].plan.actions):
+            return False
+    return True
+
+
+def run_planning(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[str, str]]:
     errors = []
     for test_case in problems:
         print()
@@ -131,43 +214,121 @@ def run_oneshot(planners: List[str], problems: List[TestCase], timeout=1) -> Lis
         pb = test_case.problem
 
         for planner_id in planners:
-            planner = OneshotPlanner(name=planner_id)
-            if planner.supports(pb.kind):
+            solutions = []
+            if(MODE == "oneshot"):
+                planner = OneshotPlanner(name=planner_id)
+            elif(MODE == "anytime"):
+                planner = AnytimePlanner(name=planner_id)
 
+            if planner.supports(pb.kind):
                 print("|  ", planner_id.ljust(40), end='')
                 start = time.time()
+                solutions = []
+
                 try:
-                    result = planner.solve(pb, timeout=timeout)
+                    if(MODE == "oneshot"):
+                        result = planner.solve(pb, timeout=timeout)
+                    elif(MODE == "anytime"):
+                        for p in planner.get_solutions(pb, timeout=timeout):
+                            if p.plan is not None:
+                                solutions.append(p)
+                        result = solutions[-1]
+
                     end = time.time()
                     status = str(result.status.name).ljust(25)
-                    outcome = check_result(test_case, result, planner)
+                    outcome = check_result(test_case, result, planner, solutions)
                     if not outcome.ok():
                         errors.append((planner_id, test_case.name))
                     runtime = "{:.3f}s".format(end - start).ljust(10)
                     print(status, "    ", runtime, outcome)
-
+                        
                 except Exception as e:
                     print(f"{bcolors.ERR}CRASH{bcolors.ENDC}", e)
                     errors.append((planner_id, test_case.name))
     return errors
 
 
-def report_oneshot(*planners: str, problem_prefix: str = ""):
+def run_grounding(grounders: List[str], problems: List[TestCase]):
+    errors = []
+    for test_case in problems:
+        pb = test_case.problem
+        print()
+        print(test_case.name.ljust(40), end='\n')
+        for grounder_id in grounders:
+            grounder = Compiler(name=grounder_id)
+            if grounder.supports(pb.kind) and grounder.supports_compilation(CompilationKind.GROUNDING):
+                try:
+                    print("|  ", grounder_id.ljust(40), end='')
+                    start = time.time()
+                    result = grounder.compile(pb, CompilationKind.GROUNDING)
+                    end = time.time()
+                    ground_problem = result.problem
+                    for a in ground_problem.actions:
+                        if a.parameters:
+                            errors.append((grounder_id, test_case.name))
+                    if 'UNIVERSAL_CONDITIONS' in ground_problem.kind.features or 'EXISTENTIAL_CONDITIONS' in ground_problem.kind.features:
+                            errors.append((grounder_id, test_case.name))
+                    runtime = "{:.3f}s".format(end - start).ljust(10)
+                    print("    ", runtime, verify(not errors, "Invalid", "Valid"))
+
+                except Exception as e:
+                    print(f"{bcolors.ERR}CRASH{bcolors.ENDC}", e)
+                    errors.append((grounder_id, test_case.name))
+    return errors
+
+
+def run_plan_repairing(planners: List[str], problems: List[TestCase], timeout=1) -> List[Tuple[str, str]]:
+    errors = []
+    for pair in problems:
+        print()
+        print(pair[0].name.ljust(40), end='\n')
+        test_case_plan = pair[0]
+        test_case_problem = pair[1]
+        pb = test_case_problem.problem
+
+        print()
+
+        for planner_id in planners:
+            solutions = []
+            planner = PlanRepairer(name=planner_id)
+
+            if planner.supports(pb.kind):
+                print("|  ", planner_id.ljust(40), end='')
+                start = time.time()
+                solutions = []
+
+                try:
+                    #print(test_case_plan)
+                    print()
+                    result = planner.repair(pb, test_case_plan)
+                    end = time.time()
+                    status = str(result.status.name).ljust(25)
+                    outcome = check_result(test_case_problem, result, planner, solutions)
+                    if not outcome.ok():
+                        errors.append((planner_id, test_case_problem.name))
+                    runtime = "{:.3f}s".format(end - start).ljust(10)
+                    print(status, "    ", runtime, outcome)
+                        
+                except Exception as e:
+                    print(f"{bcolors.ERR}CRASH{bcolors.ENDC}", e)
+                    errors.append((planner_id, test_case_problem.name))
+    return errors
+
+
+def report_planning(*planners: str, problem_prefix: str = "", timeout = 1):
     """Run all oneshot planners on all problems that start with the given prefix"""
-
-    if len(planners) == 0:
-        planners = oneshot_planners()
-
     problems = all_test_cases()
     problems = [p for p in problems if p.name.startswith(problem_prefix)]
-    errors = run_oneshot(planners, problems)
+    if len(planners) == 0:
+        planners = get_planners()
+    errors = run_planning(planners, problems, timeout)
     if len(errors) > 0:
         print("Errors:\n ", "\n  ".join(map(str, errors)))
     return errors
 
 
 def report_validation(*engines: str, problem_prefix: str = ""):
-    """Checks that all given plan validators produce the correct output on test-caes."""
+    """Checks that all given plan validators produce the correct output on test-cases."""
     errors: List[Tuple[str, str]] = []  # all errors encountered
     if len(engines) == 0:
         engines = validators()
@@ -180,6 +341,7 @@ def report_validation(*engines: str, problem_prefix: str = ""):
 
     for test_case in test_cases:
         result: ValidationResult
+        
         for i, valid_plan in enumerate(test_case.valid_plans):
             print()
             print(f"{test_case.name} valid[{i}]".ljust(40), end='\n')
@@ -209,15 +371,55 @@ def report_validation(*engines: str, problem_prefix: str = ""):
     return errors
 
 
+def report_grounding(*engines: str, problem_prefix: str = ""):
+    test_cases = classical_test_cases()
+    test_cases = [p for p in test_cases if p.name.startswith(problem_prefix)]
+    if len(engines) == 0:
+        engines = compilers()
+    
+    errors = run_grounding(engines, test_cases)
+    if len(errors) > 0:
+        print("Errors:\n ", "\n  ".join(map(str, errors)))
+    return errors
+
+
+def report_plan_repairing(*planners: str, problem_prefix: str = "", timeout = 1):
+    problems = all_test_cases()
+    plans = all_bad_plans()
+    test_cases = []
+
+    for i in range(len(plans)):
+        corresponding = 0
+        max = 0
+        for j in range(len(problems)):
+            prefix = os.path.commonprefix([plans[i].name, problems[j].name])
+            if(len(prefix) > max):
+                corresponding = j
+                max = len(prefix)
+        pair = (plans[i], problems[corresponding])
+        test_cases.append(pair)
+
+    if len(planners) == 0:
+        planners = get_planners()
+ 
+    errors = run_plan_repairing(planners, test_cases, timeout)
+    if len(errors) > 0:
+        print("Errors:\n ", "\n  ".join(map(str, errors)))
+    return errors
+
+    
+
 if __name__ == "__main__":
     print(USAGE)
     planners = sys.argv[1:]
+
     try:  # extract "--prefix PREFIX"
         prefix_opt = planners.index("--prefix")
         planners.pop(prefix_opt)
         prefix = planners.pop(prefix_opt)
     except ValueError:
         prefix = ""
+
     try:  # extract "--mode MODE"
         prefix_opt = planners.index("--mode")
         planners.pop(prefix_opt)
@@ -225,8 +427,24 @@ if __name__ == "__main__":
     except ValueError:
         mode = "oneshot"  # default mode is oneshot
 
+    try: # extract "--timeout TIMEOUT"
+        prefix_opt = planners.index("--timeout")
+        planners.pop(prefix_opt)
+        timeout = planners.pop(prefix_opt).lower()
+    except ValueError:
+        timeout = 1  # default timeout is 1
+
     if mode == "oneshot":
-        errors = report_oneshot(*planners, problem_prefix=prefix)
+        MODE = "oneshot"
+        errors = report_planning(*planners, problem_prefix=prefix)
+    elif mode == "anytime":
+        MODE = "anytime"
+        errors = report_planning(*planners, problem_prefix=prefix, timeout=int(timeout))
+    elif mode in "plan-repair":
+        MODE = "plan-repair"
+        errors = report_plan_repairing(*planners, problem_prefix=prefix)
+    elif mode == "grounding":
+        errors = report_grounding(*planners, problem_prefix=prefix)
     elif mode in ["val", "plan-validation", "validation"]:
         errors = report_validation(*planners, problem_prefix=prefix)
     else:

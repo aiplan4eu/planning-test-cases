@@ -7,16 +7,13 @@
 
   (:init
     (= (value c0) 0)
-	(= (value c1) 0)
-	(= (max_int) 4)
+    (= (value c1) 0)
+    (= (max_int) 4)
   )
 
-  (:goal (and 
-(<= (+ (value c0) 1) (value c1))
-  ))
-
-  
-  
-
-  
+  (:goal
+    (and
+      (<= (+ (value c0) 1) (value c1))
+    )
+  )
 )
